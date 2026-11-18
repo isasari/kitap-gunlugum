@@ -1,0 +1,3195 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="moderne">
+  <title>Kitap Günlüğüm — İlkokul Okuma Takip ve Günlük Uygulaması</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* 1. Moderne style tokens */
+      --background: #f4ecdc;
+      --surface-container-low: #fbf6ea;
+      --surface-container: #e9dcc0;
+      --surface-container-high: #e0cfaa;
+
+      --on-surface: #2b2a26;
+      --on-surface-variant: #55524a;
+
+      --outline: #2b2a26;
+      --outline-variant: #d9cdb3;
+
+      --primary: #1f6f6b;
+      --on-primary: #ffffff;
+      --primary-container: #bcd9d2;
+      --on-primary-container: #17504d;
+      --secondary: #ad431b;
+      --tertiary: #e0a526;
+      --error: #9a1f3a;
+      --on-error: #ffffff;
+
+      --data-1: #1f6f6b;
+      --data-2: #d9572b;
+      --data-3: #a87710;
+      --data-4: #6b4a2e;
+      --data-context: #a39880;
+
+      --font-headline: 'DM Serif Display', serif;
+      --font-body: 'Lexend', sans-serif;
+      --font-label: 'Lexend', sans-serif;
+
+      --rounded: 9999px;
+      --rounded-sm: 0.75rem;
+      --rounded-lg: 2.25rem 0.5rem 2.25rem 0.5rem;
+      --rounded-full: 9999px;
+
+      --ink-border: 2px solid var(--outline);
+      --hairline-border: 1px solid var(--outline-variant);
+      --leaf-mirror: 0.5rem 2.25rem 0.5rem 2.25rem;
+      --orb-r: 2.25rem;
+      --orb-r-small: 1.75rem;
+      --orb-clearance: 10rem;
+      --orbs:
+        radial-gradient(circle at calc(100% - 4.375rem) 4.5rem, color-mix(in srgb, var(--data-2) 90%, transparent) var(--orb-r-small), transparent calc(var(--orb-r-small) + 1px)),
+        radial-gradient(circle at calc(100% - 6.25rem) 3.625rem, color-mix(in srgb, var(--primary) 85%, transparent) var(--orb-r), transparent calc(var(--orb-r) + 1px)),
+        radial-gradient(circle at calc(100% - 8.75rem) 4.375rem, var(--tertiary) var(--orb-r), transparent calc(var(--orb-r) + 1px));
+
+      /* 2. Extended surface & semantic tokens */
+      --positive: #1f6f6b;
+      --positive-bg: #bcd9d2;
+      --warning: #8f5800;
+      --warning-bg: #f3d796;
+      --error-bg: #f4d3da;
+      --mustard-wash: color-mix(in srgb, var(--tertiary) 45%, var(--background));
+      --mustard-soft: color-mix(in srgb, var(--tertiary) 24%, var(--background));
+      --orange-soft: color-mix(in srgb, var(--secondary) 16%, var(--background));
+      --focus: var(--primary);
+      --focus-ring: 0 0 0 3px color-mix(in srgb, var(--focus) 28%, transparent);
+
+      /* Book spine tokens */
+      --spine-macera: #1f6f6b;
+      --spine-masal: #ad431b;
+      --spine-bilim: #a87710;
+      --spine-tarih: #6b4a2e;
+      --spine-mizah: #d9572b;
+      --spine-siir: #17504d;
+      --spine-doga: #3b6b4c;
+      --shelf-ledge: #c9b591;
+
+      /* 3. Type scale (Dashboard / Tool tighter ratio) */
+      --display-size: clamp(1.85rem, 1.4rem + 1.4vw, 2.5rem);
+      --headline-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+      --subhead-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* 4. Spacing scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      /* 5. Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: clip; margin: 0; padding: 0; }
+    header { position: static !important; }
+
+    body {
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      margin: 0;
+      line-height: 1.12;
+      color: var(--on-surface);
+    }
+
+    p { margin: 0; }
+
+    .page-grid {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      max-width: 1240px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Focus rings */
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Title block with Moderne multiplied orbs */
+    .title-block {
+      background-color: var(--background);
+      background-image: var(--orbs);
+      background-blend-mode: multiply;
+      background-repeat: no-repeat;
+      padding: var(--space-xl) var(--space-lg) var(--space-lg);
+      border-bottom: var(--ink-border);
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .title-block-text {
+      padding-inline-end: var(--orb-clearance);
+      display: grid;
+      gap: var(--space-sm);
+    }
+
+    .kicker-stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      width: fit-content;
+      background: var(--secondary);
+      color: var(--on-primary);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded-full);
+    }
+
+    .hero-title {
+      font-size: var(--display-size);
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title .accent-word {
+      color: var(--secondary);
+    }
+
+    .hero-subtitle {
+      color: var(--on-surface-variant);
+      max-width: 64ch;
+      font-size: var(--subhead-size);
+    }
+
+    /* Navigation pill bar */
+    .nav-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding-top: var(--space-xs);
+    }
+
+    .nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      background: var(--surface-container);
+      padding: var(--space-xs);
+      border-radius: var(--rounded-full);
+      border: var(--ink-border);
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--rounded-full);
+      border: none;
+      background: transparent;
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color var(--dur-short) var(--ease-in-out),
+                  color var(--dur-short) var(--ease-in-out),
+                  transform var(--dur-micro) var(--ease-out);
+    }
+
+    .nav-pill:hover {
+      background: var(--surface-container-high);
+    }
+
+    .nav-pill:active {
+      transform: scale(0.98);
+    }
+
+    .nav-pill.is-active {
+      background: var(--on-surface);
+      color: var(--background);
+    }
+
+    .pill-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.5rem;
+      height: 1.5rem;
+      padding: 0 var(--space-xs);
+      border-radius: var(--rounded-full);
+      background: var(--secondary);
+      color: var(--on-primary);
+      font-size: var(--label-size);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nav-pill.is-active .pill-count {
+      background: var(--tertiary);
+      color: var(--on-surface);
+    }
+
+    .class-meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Chips & Badges */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      border-radius: var(--rounded-full);
+      background: var(--on-surface);
+      color: var(--background);
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .chip.is-sage {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border: var(--ink-border);
+    }
+
+    .chip.is-sand {
+      background: var(--surface-container);
+      color: var(--on-surface);
+      border: var(--hairline-border);
+    }
+
+    .chip.is-mustard {
+      background: var(--mustard-wash);
+      color: var(--on-surface);
+      border: var(--ink-border);
+    }
+
+    /* Leaf cards (Moderne Treatment 1) */
+    .leaf {
+      border: var(--ink-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      background: var(--mustard-wash);
+      color: var(--on-surface);
+      transition: transform var(--dur-short) var(--ease-out);
+    }
+
+    .leaf.is-sage {
+      border-radius: var(--leaf-mirror);
+      background: var(--primary-container);
+      color: var(--on-surface);
+    }
+
+    .leaf.is-cream {
+      background: var(--surface-container-low);
+    }
+
+    .leaf.is-sand {
+      border-radius: var(--leaf-mirror);
+      background: var(--surface-container);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--rounded);
+      border: var(--ink-border);
+      font-family: var(--font-label);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color var(--dur-short) var(--ease-out),
+                  transform var(--dur-micro) var(--ease-out),
+                  opacity var(--dur-micro) var(--ease-out);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--on-primary-container);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: var(--on-primary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--on-surface);
+    }
+
+    .btn-tertiary {
+      background: var(--surface-container);
+      color: var(--on-surface);
+    }
+
+    .btn-tertiary:hover:not(:disabled) {
+      background: var(--surface-container-high);
+    }
+
+    .btn-cream {
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+    }
+
+    .btn-cream:hover:not(:disabled) {
+      background: var(--surface-container);
+    }
+
+    .btn-sm {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      font-size: 0.875rem;
+    }
+
+    /* Forms & Labels */
+    .form-grid {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-md);
+      align-items: end;
+    }
+
+    .field-group {
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .field-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+    }
+
+    .input-pill,
+    .select-pill {
+      width: 100%;
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      border: var(--ink-border);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      transition: box-shadow var(--dur-micro) var(--ease-out);
+    }
+
+    .select-pill {
+      padding-inline-end: var(--space-lg);
+      cursor: pointer;
+    }
+
+    .textarea-leaf {
+      width: 100%;
+      min-height: 112px;
+      padding: var(--space-md);
+      border-radius: var(--rounded-sm);
+      border: var(--ink-border);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      resize: vertical;
+      line-height: 1.55;
+      transition: box-shadow var(--dur-micro) var(--ease-out);
+    }
+
+    .input-pill:focus,
+    .select-pill:focus,
+    .textarea-leaf:focus {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .field-hint {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Star rating selector */
+    .star-picker {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      flex-wrap: wrap;
+    }
+
+    .star-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: var(--rounded-full);
+      border: var(--ink-border);
+      background: var(--surface-container-low);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  transform var(--dur-micro) var(--ease-out);
+    }
+
+    .star-btn:hover {
+      background: var(--surface-container);
+      transform: translateY(-1px);
+    }
+
+    .star-btn.is-selected {
+      background: var(--tertiary);
+      color: var(--on-surface);
+    }
+
+    /* Feedback / Toast Banner */
+    .inline-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--rounded-sm);
+      border: var(--ink-border);
+      background: var(--primary-container);
+      color: var(--on-surface);
+      animation: fadeSlideIn var(--dur-short) var(--ease-out);
+    }
+
+    .inline-banner.is-error {
+      background: var(--error-bg);
+      color: var(--on-surface);
+    }
+
+    .inline-banner.is-warning {
+      background: var(--warning-bg);
+      color: var(--on-surface);
+    }
+
+    .is-hidden {
+      display: none !important;
+    }
+
+    /* View sections */
+    .view-section {
+      display: grid;
+      gap: var(--space-xl);
+      animation: fadeSlideIn var(--dur-long) var(--ease-out);
+    }
+
+    /* Student Panel Layouts */
+    .student-hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+      gap: var(--space-lg);
+      align-items: stretch;
+    }
+
+    .greeting-card {
+      display: grid;
+      gap: var(--space-md);
+      align-content: space-between;
+    }
+
+    .greeting-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+
+    .student-switcher-wrap {
+      min-width: 240px;
+      flex: 1 1 240px;
+    }
+
+    .greeting-quote {
+      font-family: var(--font-headline);
+      font-size: clamp(1.35rem, 1.15rem + 0.75vw, 1.75rem);
+      line-height: 1.25;
+      color: var(--on-surface);
+    }
+
+    .greeting-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .goal-card {
+      display: grid;
+      gap: var(--space-md);
+      align-content: space-between;
+    }
+
+    .goal-figure-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .big-figure {
+      font-family: var(--font-headline);
+      font-size: clamp(2.1rem, 1.7rem + 1.2vw, 2.85rem);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 16px;
+      border-radius: var(--rounded-full);
+      border: var(--ink-border);
+      background: var(--surface-container-low);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--rounded-full);
+      background: var(--primary);
+      transition: width var(--dur-long) var(--ease-out);
+    }
+
+    .goal-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: var(--hairline-border);
+    }
+
+    .mini-stat {
+      display: grid;
+      gap: 2px;
+    }
+
+    .mini-stat-val {
+      font-family: var(--font-headline);
+      font-size: 1.25rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Student Main Split */
+    .student-workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    .section-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: var(--ink-border);
+    }
+
+    .section-title {
+      font-size: var(--headline-size);
+    }
+
+    .section-title .accent-word {
+      color: var(--secondary);
+    }
+
+    /* Filter pill strip */
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded-full);
+      border: var(--ink-border);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out);
+    }
+
+    .filter-pill:hover {
+      background: var(--surface-container);
+    }
+
+    .filter-pill.is-active {
+      background: var(--on-surface);
+      color: var(--background);
+    }
+
+    /* Virtual Bookshelf */
+    .bookshelf-wrapper {
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .shelf-case {
+      background: var(--surface-container-low);
+      border: var(--ink-border);
+      border-radius: var(--rounded-sm);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .shelf-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(175px, 100%), 1fr));
+      gap: var(--space-md);
+      padding-bottom: var(--space-md);
+      border-bottom: 10px solid var(--shelf-ledge);
+    }
+
+    .book-volume {
+      display: grid;
+      gap: var(--space-sm);
+      align-content: space-between;
+      text-align: left;
+      padding: var(--space-md);
+      border-radius: 0.35rem 1.25rem 1.25rem 0.35rem;
+      border: var(--ink-border);
+      border-left-width: 12px;
+      background: var(--background);
+      cursor: pointer;
+      min-height: 170px;
+      transition: transform var(--dur-short) var(--ease-out),
+                  background-color var(--dur-short) var(--ease-out);
+    }
+
+    .book-volume:hover {
+      transform: translateY(-4px);
+      background: var(--surface-container);
+    }
+
+    .book-volume.is-selected {
+      background: var(--mustard-soft);
+    }
+
+    .book-volume[data-genre="Macera"] { border-left-color: var(--spine-macera); }
+    .book-volume[data-genre="Masal & Fabl"] { border-left-color: var(--spine-masal); }
+    .book-volume[data-genre="Bilim & Keşif"] { border-left-color: var(--spine-bilim); }
+    .book-volume[data-genre="Tarih & Biyografi"] { border-left-color: var(--spine-tarih); }
+    .book-volume[data-genre="Mizah"] { border-left-color: var(--spine-mizah); }
+    .book-volume[data-genre="Şiir"] { border-left-color: var(--spine-siir); }
+    .book-volume[data-genre="Doğa & Hayvanlar"] { border-left-color: var(--spine-doga); }
+
+    .book-vol-title {
+      font-family: var(--font-headline);
+      font-size: 1.0625rem;
+      line-height: 1.2;
+      color: var(--on-surface);
+    }
+
+    .book-vol-author {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+    }
+
+    .book-vol-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xs);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface-variant);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+      width: fit-content;
+      border: 1px solid var(--outline);
+    }
+
+    .status-badge.is-approved {
+      background: var(--positive-bg);
+      color: var(--on-surface);
+    }
+
+    .status-badge.is-pending {
+      background: var(--warning-bg);
+      color: var(--on-surface);
+    }
+
+    .status-badge.is-rejected {
+      background: var(--error-bg);
+      color: var(--on-surface);
+    }
+
+    /* Book Detail Panel (adjacent to shelf) */
+    .book-detail-panel {
+      background: var(--surface-container-low);
+      border: var(--ink-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .reflection-quote {
+      background: var(--background);
+      border-left: 4px solid var(--primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--rounded-sm) var(--rounded-sm) 0;
+      font-style: italic;
+    }
+
+    .teacher-note-box {
+      background: var(--primary-container);
+      border: var(--ink-border);
+      border-radius: var(--rounded-sm);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .teacher-note-box.is-rejected {
+      background: var(--error-bg);
+    }
+
+    /* Badges Grid */
+    .badges-section {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+
+    .badge-card {
+      border: var(--ink-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      background: var(--surface-container-low);
+      display: grid;
+      gap: var(--space-sm);
+      align-content: space-between;
+      opacity: 0.85;
+    }
+
+    .badge-card.is-unlocked {
+      background: var(--mustard-wash);
+      opacity: 1;
+    }
+
+    .badge-card.is-unlocked:nth-child(even) {
+      background: var(--primary-container);
+      border-radius: var(--leaf-mirror);
+    }
+
+    .badge-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--rounded-full);
+      border: var(--ink-border);
+      background: var(--surface-container);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--on-surface);
+    }
+
+    .badge-card.is-unlocked .badge-icon-wrap {
+      background: var(--on-surface);
+      color: var(--background);
+    }
+
+    .badge-title {
+      font-family: var(--font-headline);
+      font-size: 1.125rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+      border: 2px dashed var(--outline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-xl) var(--space-lg);
+      text-align: center;
+      display: grid;
+      gap: var(--space-sm);
+      justify-items: center;
+      background: var(--background);
+    }
+
+    /* Teacher Panel */
+    .teacher-controls-bar {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .teacher-settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+      gap: var(--space-md);
+      align-items: end;
+    }
+
+    .teacher-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    .roster-list {
+      display: grid;
+      gap: var(--space-sm);
+    }
+
+    .roster-item {
+      width: 100%;
+      text-align: left;
+      padding: var(--space-md);
+      border-radius: var(--rounded-sm);
+      border: var(--ink-border);
+      background: var(--surface-container-low);
+      cursor: pointer;
+      display: grid;
+      gap: var(--space-xs);
+      transition: background-color var(--dur-micro) var(--ease-out);
+    }
+
+    .roster-item:hover {
+      background: var(--surface-container);
+    }
+
+    .roster-item.is-selected {
+      background: var(--primary-container);
+    }
+
+    .roster-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    .review-card {
+      background: var(--surface-container-low);
+      border: var(--ink-border);
+      border-radius: var(--rounded-sm);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .review-card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: start;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      border-bottom: var(--hairline-border);
+    }
+
+    .review-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* PIN / Access Cards Grid */
+    .access-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+
+    .pin-card {
+      border: var(--ink-border);
+      border-radius: var(--rounded-sm);
+      background: var(--surface-container-low);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    /* Reports View */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+
+    .kpi-card {
+      padding: var(--space-lg);
+    }
+
+    .kpi-value {
+      font-family: var(--font-headline);
+      font-size: clamp(1.85rem, 1.5rem + 1vw, 2.45rem);
+      font-variant-numeric: tabular-nums;
+      margin: var(--space-xs) 0;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+      gap: var(--space-lg);
+    }
+
+    .chart-card {
+      background: var(--surface-container-low);
+      border: var(--ink-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .chart-container {
+      position: relative;
+      min-height: 290px;
+      width: 100%;
+    }
+
+    /* Tables (Moderne spec) */
+    .table-card {
+      background: var(--surface-container-low);
+      border: var(--ink-border);
+      border-radius: var(--rounded-sm);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th {
+      text-align: left;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--ink-border);
+    }
+
+    td {
+      padding: var(--space-md);
+      border-bottom: var(--hairline-border);
+      vertical-align: middle;
+    }
+
+    tr.is-highlighted {
+      background: var(--mustard-soft);
+    }
+
+    .sort-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      padding: var(--space-xs) 0;
+      min-height: 44px;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-transform: inherit;
+      letter-spacing: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .sort-btn:hover {
+      color: var(--primary);
+    }
+
+    /* Container queries for adaptive internal cards */
+    .card-wrapper { container-type: inline-size; }
+    @container (max-width: 460px) {
+      .form-row-2 { grid-template-columns: 1fr; }
+      .goal-stats-row { grid-template-columns: 1fr; }
+    }
+
+    /* Footer */
+    .app-footer {
+      border-top: var(--hairline-border);
+      padding: var(--space-lg) 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      color: var(--on-surface-variant);
+      font-size: 0.875rem;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive mobile breakpoint */
+    @media (max-width: 880px) {
+      .student-hero-grid,
+      .student-workspace-grid,
+      .teacher-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-grid {
+        padding: var(--space-md);
+        gap: var(--space-md);
+      }
+      .title-block {
+        padding: var(--space-lg) var(--space-md);
+        background-image: none;
+      }
+      .title-block-text {
+        padding-inline-end: 0;
+      }
+      .form-row-2 {
+        grid-template-columns: 1fr;
+      }
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-pills {
+        width: 100%;
+      }
+      .nav-pill {
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-grid">
+    <!-- Title Block -->
+    <header class="title-block">
+      <div class="title-block-text">
+        <span class="kicker-stamp">İlkokul Okuma Günlüğü</span>
+        <h1 class="hero-title">Kitap <span class="accent-word">Günlüğüm</span></h1>
+        <p class="hero-subtitle">Okuduğun her kitabın izini sür, duygularını günlüğüne kaydet, rozetleri topla ve sınıfının okuma yolculuğunu birlikte keşfet.</p>
+      </div>
+
+      <div class="nav-toolbar">
+        <nav class="nav-pills" aria-label="Ana uygulama görünümleri">
+          <button type="button" class="nav-pill is-active" id="tab-student" onclick="switchView('student')">
+            <i data-lucide="book-open" width="18" height="18" aria-hidden="true"></i>
+            <span>Öğrenci Paneli</span>
+          </button>
+          <button type="button" class="nav-pill" id="tab-teacher" onclick="switchView('teacher')">
+            <i data-lucide="graduation-cap" width="18" height="18" aria-hidden="true"></i>
+            <span>Öğretmen Paneli</span>
+            <span class="pill-count" id="nav-pending-count">0</span>
+          </button>
+          <button type="button" class="nav-pill" id="tab-reports" onclick="switchView('reports')">
+            <i data-lucide="bar-chart-3" width="18" height="18" aria-hidden="true"></i>
+            <span>Raporlama</span>
+          </button>
+        </nav>
+
+        <div class="class-meta-strip" id="header-meta-strip">
+          <span class="chip is-sand" id="header-class-chip">3-A Sınıfı</span>
+          <span class="chip is-sage" id="header-goal-chip">Hedef: 10 Kitap</span>
+          <span class="chip is-mustard" id="header-days-chip">21 gün kaldı</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Global Status Banner -->
+    <div id="global-banner" class="inline-banner is-hidden" role="status" aria-live="polite">
+      <span id="global-banner-text"></span>
+      <button type="button" class="btn btn-cream btn-sm" onclick="hideBanner()">Kapat</button>
+    </div>
+
+    <!-- VIEW 1: ÖĞRENCİ PANELİ -->
+    <main id="view-student" class="view-section">
+      <!-- Hero Row: Greeting + Progress Meter -->
+      <section class="student-hero-grid">
+        <div class="leaf is-sage greeting-card card-wrapper">
+          <div class="greeting-top">
+            <div class="field-group student-switcher-wrap">
+              <label class="field-label" for="student-select">Günlük Sahibi (Öğrenci Seç)</label>
+              <select id="student-select" class="select-pill" onchange="selectStudent(this.value)"></select>
+            </div>
+            <span class="chip" id="student-pin-badge">Günlük Kodu: #3041</span>
+          </div>
+
+          <p class="greeting-quote" id="student-greeting-text">
+            “Merhaba Minik Okur! Bugün günlüğüne hangi büyülü macerayı ekliyoruz?”
+          </p>
+
+          <div class="greeting-actions">
+            <button type="button" class="btn btn-cream btn-sm" onclick="cycleGreeting()">
+              <i data-lucide="sparkles" width="16" height="16" aria-hidden="true"></i>
+              <span>Yeni Günlük İlhamı</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="focusBookForm()">
+              <i data-lucide="feather" width="16" height="16" aria-hidden="true"></i>
+              <span>Hemen Kitap Ekle</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="leaf goal-card card-wrapper">
+          <div class="goal-figure-row">
+            <div>
+              <span class="field-label">Okuma Hedefi İlerlemesi</span>
+              <div class="big-figure" id="student-goal-fraction">0 / 10</div>
+            </div>
+            <span class="chip" id="student-goal-percent">%0 Tamamlandı</span>
+          </div>
+
+          <div class="progress-track" role="progressbar" aria-label="Okuma hedefi ilerlemesi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="student-goal-bar-wrap">
+            <div class="progress-fill" id="student-goal-bar" style="width: 0%;"></div>
+          </div>
+
+          <div class="goal-stats-row">
+            <div class="mini-stat">
+              <span class="field-label">Onaylı Sayfa</span>
+              <span class="mini-stat-val" id="student-total-pages">0</span>
+            </div>
+            <div class="mini-stat">
+              <span class="field-label">Onay Bekleyen</span>
+              <span class="mini-stat-val" id="student-pending-books">0</span>
+            </div>
+            <div class="mini-stat">
+              <span class="field-label">Kalan Süre</span>
+              <span class="mini-stat-val" id="student-days-left">21 gün</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Workspace: Bookshelf + Form -->
+      <section class="student-workspace-grid">
+        <!-- Left: Virtual Bookshelf + Selected Book Detail + Badges -->
+        <div class="bookshelf-wrapper">
+          <div class="section-header-row">
+            <h2 class="section-title">Sanal <span class="accent-word">Kitaplığım</span></h2>
+            <div class="filter-pills" role="group" aria-label="Kitaplık durum filtresi">
+              <button type="button" class="filter-pill is-active" id="shelf-filter-all" onclick="setShelfFilter('all')">Tümü</button>
+              <button type="button" class="filter-pill" id="shelf-filter-approved" onclick="setShelfFilter('approved')">Onaylı</button>
+              <button type="button" class="filter-pill" id="shelf-filter-pending" onclick="setShelfFilter('pending')">Bekleyen</button>
+            </div>
+          </div>
+
+          <div class="shelf-case" id="virtual-bookshelf"></div>
+
+          <!-- Selected Book Journal Detail -->
+          <div id="selected-book-detail" class="book-detail-panel is-hidden"></div>
+
+          <!-- Dynamic Badges -->
+          <div class="badges-section">
+            <div class="section-header-row">
+              <h2 class="section-title">Kitap Günlüğüm <span class="accent-word">Rozetleri</span></h2>
+              <span class="chip is-mustard" id="student-badges-count">0 / 5 Rozet</span>
+            </div>
+            <div class="badges-grid" id="student-badges-grid"></div>
+          </div>
+        </div>
+
+        <!-- Right: Journal Entry Submission Form -->
+        <aside class="leaf is-cream card-wrapper" id="book-form-card">
+          <div style="display: grid; gap: var(--space-md);">
+            <div>
+              <span class="kicker-stamp">Yeni Sayfa</span>
+              <h2 class="section-title" style="margin-top: var(--space-sm);">Günlüğüne Kitap <span class="accent-word">Ekle</span></h2>
+              <p class="field-hint" style="margin-top: var(--space-xs);">Okuduğun kitabın bilgilerini ve düşüncelerini yaz; öğretmenin onayladığında kitaplığına eklensin.</p>
+            </div>
+
+            <div id="form-feedback" class="inline-banner is-hidden" role="status"></div>
+
+            <form id="book-entry-form" class="form-grid" onsubmit="handleBookSubmit(event)">
+              <input type="hidden" id="editing-entry-id" value="">
+
+              <div class="field-group">
+                <label class="field-label" for="book-title">Kitap Adı</label>
+                <input type="text" id="book-title" class="input-pill" maxlength="80" placeholder="Örn: Küçük Prens" required>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="book-author">Yazar Adı</label>
+                <input type="text" id="book-author" class="input-pill" maxlength="60" placeholder="Örn: Antoine de Saint-Exupéry" required>
+              </div>
+
+              <div class="form-row-2">
+                <div class="field-group">
+                  <label class="field-label" for="book-genre">Kitap Türü</label>
+                  <select id="book-genre" class="select-pill" required>
+                    <option value="Macera">Macera</option>
+                    <option value="Masal & Fabl">Masal &amp; Fabl</option>
+                    <option value="Bilim & Keşif">Bilim &amp; Keşif</option>
+                    <option value="Tarih & Biyografi">Tarih &amp; Biyografi</option>
+                    <option value="Mizah">Mizah</option>
+                    <option value="Şiir">Şiir</option>
+                    <option value="Doğa & Hayvanlar">Doğa &amp; Hayvanlar</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label" for="book-pages">Sayfa Sayısı</label>
+                  <input type="number" id="book-pages" class="input-pill" min="5" max="1200" value="96" required>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <span class="field-label">Yıldız Değerlendirmesi</span>
+                <div class="star-picker" role="radiogroup" aria-label="Kitap yıldız puanı">
+                  <button type="button" class="star-btn is-selected" data-star="1" onclick="setFormRating(1)" aria-label="1 yıldız">★</button>
+                  <button type="button" class="star-btn is-selected" data-star="2" onclick="setFormRating(2)" aria-label="2 yıldız">★</button>
+                  <button type="button" class="star-btn is-selected" data-star="3" onclick="setFormRating(3)" aria-label="3 yıldız">★</button>
+                  <button type="button" class="star-btn is-selected" data-star="4" onclick="setFormRating(4)" aria-label="4 yıldız">★</button>
+                  <button type="button" class="star-btn is-selected" data-star="5" onclick="setFormRating(5)" aria-label="5 yıldız">★</button>
+                  <span class="field-hint" id="rating-label-text" style="margin-left: var(--space-xs);">5 / 5 Harika!</span>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="book-reflection">Günlük Notum / Düşüncelerim</label>
+                <textarea id="book-reflection" class="textarea-leaf" maxlength="500" placeholder="Bu kitapta seni en çok etkileyen olay neydi? Kahramanla arkadaş olsan ona ne söylerdin?" required oninput="updateCharCount(this.value)"></textarea>
+                <span class="field-hint" id="reflection-char-count">0 / 500 karakter (en az 15 karakter yaz)</span>
+              </div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: var(--space-sm);">
+                <button type="submit" class="btn btn-primary" id="submit-book-btn" style="flex: 1 1 180px;">
+                  <i data-lucide="book-marked" width="18" height="18" aria-hidden="true"></i>
+                  <span>Günlüğüme Kaydet</span>
+                </button>
+                <button type="button" class="btn btn-tertiary is-hidden" id="cancel-edit-btn" onclick="cancelEditEntry()">Vazgeç</button>
+              </div>
+            </form>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <!-- VIEW 2: ÖĞRETMEN PANELİ -->
+    <section id="view-teacher" class="view-section is-hidden" aria-label="Öğretmen Paneli">
+      <!-- Class Settings & Management -->
+      <div class="leaf is-cream teacher-controls-bar card-wrapper">
+        <div class="section-header-row">
+          <div>
+            <span class="kicker-stamp">Sınıf Yönetimi</span>
+            <h2 class="section-title" style="margin-top: var(--space-xs);">Öğretmen <span class="accent-word">Kontrol</span> Masası</h2>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-sm);">
+            <button type="button" class="btn btn-tertiary btn-sm" onclick="toggleAccessCards()">
+              <i data-lucide="qr-code" width="16" height="16" aria-hidden="true"></i>
+              <span>Öğrenci Giriş Kartları</span>
+            </button>
+            <button type="button" class="btn btn-tertiary btn-sm" id="reset-demo-btn" onclick="handleResetClass(this)">
+              <i data-lucide="rotate-ccw" width="16" height="16" aria-hidden="true"></i>
+              <span>Sınıf Kayıtlarını Temizle</span>
+            </button>
+            <button type="button" class="btn btn-cream btn-sm" onclick="restoreSampleClass()">
+              <i data-lucide="refresh-cw" width="16" height="16" aria-hidden="true"></i>
+              <span>Örnek Veriyi Yükle</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="teacher-settings-grid">
+          <div class="field-group">
+            <label class="field-label" for="setting-class-name">Sınıf Adı</label>
+            <input type="text" id="setting-class-name" class="input-pill" value="3-A Sınıfı" onchange="updateClassSettings()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="setting-goal-books">Öğrenci Kitap Hedefi</label>
+            <input type="number" id="setting-goal-books" class="input-pill" min="1" max="50" value="10" onchange="updateClassSettings()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="setting-end-date">Hedef Bitiş Tarihi</label>
+            <input type="date" id="setting-end-date" class="input-pill" onchange="updateClassSettings()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="new-student-name">Sınıfa Yeni Öğrenci Ekle</label>
+            <div style="display: flex; gap: var(--space-xs);">
+              <input type="text" id="new-student-name" class="input-pill" placeholder="Ad Soyad">
+              <button type="button" class="btn btn-primary btn-sm" onclick="addNewStudent()">Ekle</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsible Student Access Cards (PIN / Code preview) -->
+        <div id="access-cards-drawer" class="is-hidden" style="padding-top: var(--space-md); border-top: var(--hairline-border);">
+          <p class="field-hint" style="margin-bottom: var(--space-md);">Öğrenciler kendi isimleri ve 4 haneli günlük kodlarıyla kitap girişlerini takip edebilir.</p>
+          <div class="access-cards-grid" id="access-cards-grid"></div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div style="display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-md);">
+        <div class="filter-pills" role="group" aria-label="Öğrenci durum filtreleri">
+          <button type="button" class="filter-pill is-active" id="tfilter-all" onclick="setTeacherFilter('all')">Tümü</button>
+          <button type="button" class="filter-pill" id="tfilter-pending" onclick="setTeacherFilter('pending')">Onay bekleyenler</button>
+          <button type="button" class="filter-pill" id="tfilter-none" onclick="setTeacherFilter('none')">Hiç kitap girmeyenler</button>
+          <button type="button" class="filter-pill" id="tfilter-week" onclick="setTeacherFilter('week')">Bu hafta okuyanlar</button>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-sm);">
+          <div class="field-group" style="min-width: 220px;">
+            <label class="field-label" for="teacher-search">Öğrenci Ara</label>
+            <input type="search" id="teacher-search" class="input-pill" placeholder="İsim yazın..." oninput="setTeacherSearch(this.value)">
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="queue-mode-btn" onclick="togglePendingQueueMode()">
+            <i data-lucide="clock" width="16" height="16" aria-hidden="true"></i>
+            <span>Tüm Bekleyenleri Gör</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Teacher Review Workspace -->
+      <div class="teacher-workspace">
+        <div>
+          <h3 class="section-title" style="margin-bottom: var(--space-md);">Öğrenci Listesi (<span id="filtered-student-count">0</span>)</h3>
+          <div class="roster-list" id="teacher-roster-list"></div>
+        </div>
+
+        <div>
+          <h3 class="section-title" style="margin-bottom: var(--space-md);" id="teacher-review-heading">Günlük Kayıtlarını İncele</h3>
+          <div id="teacher-review-pane" style="display: grid; gap: var(--space-md);"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: RAPORLAMA -->
+    <section id="view-reports" class="view-section is-hidden" aria-label="Raporlama ve Dışa Aktarım">
+      <div class="section-header-row">
+        <div>
+          <span class="kicker-stamp">Sınıf İstatistikleri</span>
+          <h2 class="section-title" style="margin-top: var(--space-xs);">Okuma Gelişim <span class="accent-word">Raporu</span></h2>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="exportClassReportCsv()">
+          <i data-lucide="download" width="18" height="18" aria-hidden="true"></i>
+          <span>Excel / CSV Raporu İndir</span>
+        </button>
+      </div>
+
+      <div id="export-status-banner" class="inline-banner is-hidden" role="status"></div>
+
+      <!-- 4 Headline KPI Leaf Cards -->
+      <div class="kpi-grid">
+        <div class="leaf kpi-card">
+          <span class="field-label">Toplam Onaylı Kitap</span>
+          <div class="kpi-value" id="kpi-total-books">0</div>
+          <p class="field-hint" id="kpi-pending-note">0 kitap onay bekliyor</p>
+        </div>
+        <div class="leaf is-sage kpi-card">
+          <span class="field-label">Toplam Okunan Sayfa</span>
+          <div class="kpi-value" id="kpi-total-pages">0</div>
+          <p class="field-hint" id="kpi-avg-pages">Öğrenci başı ort. 0 sayfa</p>
+        </div>
+        <div class="leaf kpi-card">
+          <span class="field-label">Aktif Okur Oranı</span>
+          <div class="kpi-value" id="kpi-active-ratio">%0</div>
+          <p class="field-hint" id="kpi-active-detail">0 / 0 öğrenci kitap ekledi</p>
+        </div>
+        <div class="leaf is-sage kpi-card">
+          <span class="field-label">Sınıf Hedef İlerlemesi</span>
+          <div class="kpi-value" id="kpi-goal-progress">%0</div>
+          <p class="field-hint" id="kpi-goal-detail">0 / 80 sınıf hedefi</p>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div>
+            <h3>Kitap Türü Dağılımı</h3>
+            <p class="field-hint">Onaylanmış günlük kayıtlarına göre en çok tercih edilen türler</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="genre-chart" aria-label="Kitap türü dağılımı grafiği"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div>
+            <h3>Öğrenci Bazlı Okuma İlerlemesi</h3>
+            <p class="field-hint">Her öğrencinin onaylı ve onay bekleyen kitap sayıları</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="student-chart" aria-label="Öğrenci bazlı okuma ilerlemesi grafiği"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student-Level Reporting Table -->
+      <div class="table-card">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm);">
+          <h3>Öğrenci Bazlı Detaylı Okuma Tablosu</h3>
+          <span class="field-hint">Sıralamak için sütun başlıklarına tıklayın</span>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th><button type="button" class="sort-btn" onclick="sortReportTable('name')">Öğrenci</button></th>
+              <th><button type="button" class="sort-btn" onclick="sortReportTable('approved')">Onaylı Kitap</button></th>
+              <th><button type="button" class="sort-btn" onclick="sortReportTable('pending')">Bekleyen</button></th>
+              <th><button type="button" class="sort-btn" onclick="sortReportTable('pages')">Toplam Sayfa</button></th>
+              <th>Favori Tür</th>
+              <th><button type="button" class="sort-btn" onclick="sortReportTable('progress')">Hedef %</button></th>
+              <th>Rozetler</th>
+              <th>Son Okuma</th>
+            </tr>
+          </thead>
+          <tbody id="report-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <span>Kitap Günlüğüm · İlkokul Sınıf İçi Okuma Takip ve Değerlendirme Günlüğü</span>
+      <span id="footer-sync-status">Veriler oturum içinde otomatik kaydedilir.</span>
+    </footer>
+  </div>
+
+  <api-shim></api-shim>
+
+  <script>
+    // =========================================================================
+    // 1. CONSTANTS & HELPERS (All strings in backticks for Turkish apostrophes)
+    // =========================================================================
+    const GREETING_MESSAGES = [
+      `Merhaba Minik Okur! Bugün günlüğüne hangi büyülü macerayı ekliyoruz?`,
+      `Günlüğün yeni bir sayfa açıyor! Okuduğun son kitabı kaydetmeye hazır mısın?`,
+      `Her kitap günlüğünde yepyeni bir iz bırakır. Bugünkü keşfin hangisi?`,
+      `Kalemin ve hayal gücün hazırsa, okuduğun kitabın sırrını günlüğüne fısılda!`,
+      `Bir sayfa daha çevirdin, bir dünya daha tanıdın. Günlüğüne not düşmeyi unutma!`
+    ];
+
+    const GENRE_LIST = [
+      `Macera`,
+      `Masal & Fabl`,
+      `Bilim & Keşif`,
+      `Tarih & Biyografi`,
+      `Mizah`,
+      `Şiir`,
+      `Doğa & Hayvanlar`
+    ];
+
+    const RATING_LABELS = {
+      1: `1 / 5 — Pek sevmedim`,
+      2: `2 / 5 — Fena değil`,
+      3: `3 / 5 — Güzeldi`,
+      4: `4 / 5 — Çok beğendim`,
+      5: `5 / 5 — Harikaydı!`
+    };
+
+    function formatIsoDate(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, `0`);
+      const d = String(dateObj.getDate()).padStart(2, `0`);
+      return `${y}-${m}-${d}`;
+    }
+
+    function daysOffsetIso(offsetDays) {
+      const d = new Date();
+      d.setHours(12, 0, 0, 0);
+      d.setDate(d.getDate() + offsetDays);
+      return formatIsoDate(d);
+    }
+
+    function formatTurkishDate(isoStr) {
+      if (!isoStr) return `—`;
+      const parts = isoStr.split(`-`);
+      if (parts.length !== 3) return isoStr;
+      const months = [`Oca`, `Şub`, `Mar`, `Nis`, `May`, `Haz`, `Tem`, `Ağu`, `Eyl`, `Eki`, `Kas`, `Ara`];
+      const monthIdx = parseInt(parts[1], 10) - 1;
+      const dayNum = parseInt(parts[2], 10);
+      return `${dayNum} ${months[monthIdx] || parts[1]} ${parts[0]}`;
+    }
+
+    function isWithinLast7Days(isoStr) {
+      if (!isoStr) return false;
+      const now = new Date();
+      now.setHours(23, 59, 59, 999);
+      const target = new Date(isoStr + `T12:00:00`);
+      const diffMs = now.getTime() - target.getTime();
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      return diffDays >= -1 && diffDays <= 7;
+    }
+
+    function calcDaysRemaining(endDateIso) {
+      if (!endDateIso) return 0;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const end = new Date(endDateIso + `T00:00:00`);
+      const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      return Math.max(0, diff);
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return ``;
+      return String(str)
+        .replace(/&/g, `&amp;`)
+        .replace(/</g, `&lt;`)
+        .replace(/>/g, `&gt;`)
+        .replace(/"/g, `&quot;`)
+        .replace(/'/g, `&#39;`);
+    }
+
+    function renderStarsText(rating) {
+      const r = Math.max(1, Math.min(5, Number(rating) || 5));
+      return `★`.repeat(r) + `☆`.repeat(5 - r);
+    }
+
+    // =========================================================================
+    // 2. INITIAL SAMPLE DATA FACTORY
+    // =========================================================================
+    function createSampleState() {
+      return {
+        className: `3-A Sınıfı`,
+        goalBooks: 10,
+        goalEndDate: daysOffsetIso(21),
+        activeView: `student`,
+        activeStudentId: `stu-1`,
+        greetingIndex: 0,
+        shelfFilter: `all`,
+        selectedBookId: `book-101`,
+        teacherFilter: `all`,
+        teacherSearch: ``,
+        teacherSelectedStudentId: `stu-1`,
+        teacherQueueMode: false,
+        reportSortKey: `approved`,
+        reportSortDir: `desc`,
+        students: [
+          { id: `stu-1`, name: `Elif Yılmaz`, pin: `3041` },
+          { id: `stu-2`, name: `Kerem Demir`, pin: `3042` },
+          { id: `stu-3`, name: `Zeynep Kaya`, pin: `3043` },
+          { id: `stu-4`, name: `Mert Özkan`, pin: `3044` },
+          { id: `stu-5`, name: `Defne Şahin`, pin: `3045` },
+          { id: `stu-6`, name: `Arda Çelik`, pin: `3046` },
+          { id: `stu-7`, name: `Yusuf Aydın`, pin: `3047` },
+          { id: `stu-8`, name: `Mira Koç`, pin: `3048` }
+        ],
+        entries: [
+          {
+            id: `book-101`,
+            studentId: `stu-1`,
+            title: `Küçük Prens`,
+            author: `Antoine de Saint-Exupéry`,
+            genre: `Masal & Fabl`,
+            pages: 112,
+            rating: 5,
+            reflection: `Küçük Prens'in gülüne gösterdiği özen beni çok duygulandırdı. Gerçekten sevdiğimiz şeylere emek vermemiz gerektiğini öğrendim.`,
+            status: `approved`,
+            teacherNote: `Harika bir çıkarım yapmışsın Elif! Kalbinle görmeyi ne güzel anlatmışsın.`,
+            dateAdded: daysOffsetIso(-14)
+          },
+          {
+            id: `book-102`,
+            studentId: `stu-1`,
+            title: `Charlie'nin Çikolata Fabrikası`,
+            author: `Roald Dahl`,
+            genre: `Macera`,
+            pages: 192,
+            rating: 5,
+            reflection: `Charlie'nin ailesine olan sevgisi ve dürüstlüğü sayesinde fabrikayı kazanmasına çok sevindim. Umpa Lumpa şarkıları çok komikti.`,
+            status: `approved`,
+            teacherNote: `Çok güzel bir özet, tebrikler!`,
+            dateAdded: daysOffsetIso(-9)
+          },
+          {
+            id: `book-103`,
+            studentId: `stu-1`,
+            title: `Meraklı Bilim Dedektifleri`,
+            author: `Aslı Der`,
+            genre: `Bilim & Keşif`,
+            pages: 88,
+            rating: 4,
+            reflection: `Mıknatıslarla ilgili deneyi evde kardeşimle birlikte denedik ve gerçekten çalıştı!`,
+            status: `approved`,
+            teacherNote: `Okuduklarını evde deneyerek pekiştirmen harika.`,
+            dateAdded: daysOffsetIso(-3)
+          },
+          {
+            id: `book-104`,
+            studentId: `stu-1`,
+            title: `Büyülü Ormanın Şarkısı`,
+            author: `Behiç Ak`,
+            genre: `Doğa & Hayvanlar`,
+            pages: 76,
+            rating: 5,
+            reflection: `Ağaçların ve kuşların birbirine yardım etmesi bana doğayı korumanın önemini yeniden hatırlattı.`,
+            status: `approved`,
+            teacherNote: `Doğa sevgini çok güzel ifade etmişsin.`,
+            dateAdded: daysOffsetIso(-2)
+          },
+          {
+            id: `book-105`,
+            studentId: `stu-1`,
+            title: `Atatürk'ün Çocukluk Anıları`,
+            author: `Şükrü Enis Regü`,
+            genre: `Tarih & Biyografi`,
+            pages: 96,
+            rating: 5,
+            reflection: `Karga kovalama anısını okurken hem güldüm hem de Mustafa Kemal'in sorumluluk duygusuna hayran kaldım.`,
+            status: `pending`,
+            teacherNote: ``,
+            dateAdded: daysOffsetIso(0)
+          },
+          {
+            id: `book-201`,
+            studentId: `stu-2`,
+            title: `Saftirik Greg'in Günlüğü`,
+            author: `Jeff Kinney`,
+            genre: `Mizah`,
+            pages: 217,
+            rating: 5,
+            reflection: `Greg'in okulda başına gelen sakarlıkları okurken kahkahalarla güldüm. Çizimler de hikâyeyi çok eğlenceli yapmış.`,
+            status: `approved`,
+            teacherNote: `Okurken eğlenmen çok güzel Kerem!`,
+            dateAdded: daysOffsetIso(-11)
+          },
+          {
+            id: `book-202`,
+            studentId: `stu-2`,
+            title: `Uzay Yolculuğu Atlası`,
+            author: `Ece Erdoğuş`,
+            genre: `Bilim & Keşif`,
+            pages: 64,
+            rating: 4,
+            reflection: `Satürn'ün halkalarının buz ve kayalardan oluştuğunu ilk kez bu kitapta öğrendim.`,
+            status: `approved`,
+            teacherNote: `Yeni bilgiler paylaşman harika.`,
+            dateAdded: daysOffsetIso(-4)
+          },
+          {
+            id: `book-203`,
+            studentId: `stu-2`,
+            title: `Nasreddin Hoca Fıkraları`,
+            author: `Kolektif`,
+            genre: `Mizah`,
+            pages: 80,
+            rating: 5,
+            reflection: `En çok göle maya çalma fıkrasını sevdim. "Ya tutarsa!" sözü çok hoşuma gitti.`,
+            status: `pending`,
+            teacherNote: ``,
+            dateAdded: daysOffsetIso(-1)
+          },
+          {
+            id: `book-301`,
+            studentId: `stu-3`,
+            title: `Uçan Sınıf`,
+            author: `Erich Kästner`,
+            genre: `Macera`,
+            pages: 168,
+            rating: 5,
+            reflection: `Martin'in arkadaşlarına sadakati beni çok etkiledi. İyi arkadaşlar zor günlerde birbirini yalnız bırakmaz.`,
+            status: `approved`,
+            teacherNote: `Arkadaşlık vurgusu çok değerli Zeynep.`,
+            dateAdded: daysOffsetIso(-16)
+          },
+          {
+            id: `book-302`,
+            studentId: `stu-3`,
+            title: `Çocuk Şiirleri Antolojisi`,
+            author: `Fazıl Hüsnü Dağlarca`,
+            genre: `Şiir`,
+            pages: 72,
+            rating: 4,
+            reflection: `Şiirleri yüksek sesle okuyunca kulağa müzik gibi geliyor. İki tanesini ezberledim.`,
+            status: `approved`,
+            teacherNote: `Sınıfta da okumak ister misin? Tebrikler!`,
+            dateAdded: daysOffsetIso(-12)
+          },
+          {
+            id: `book-303`,
+            studentId: `stu-3`,
+            title: `Güneşin Peşindeki Kırlangıç`,
+            author: `Sevim Ak`,
+            genre: `Doğa & Hayvanlar`,
+            pages: 104,
+            rating: 5,
+            reflection: `Kırlangıcın uzun göç yolculuğunda pes etmemesi bana da derslerimde azimli olmayı öğretti.`,
+            status: `approved`,
+            teacherNote: `Harika bir benzetme kurmuşsun.`,
+            dateAdded: daysOffsetIso(-8)
+          },
+          {
+            id: `book-304`,
+            studentId: `stu-3`,
+            title: `La Fontaine Masalları`,
+            author: `Jean de La Fontaine`,
+            genre: `Masal & Fabl`,
+            pages: 96,
+            rating: 4,
+            reflection: `Karga ile Tilki masalından kimsenin boş övgülerine kanmamamız gerektiğini çıkardım.`,
+            status: `approved`,
+            teacherNote: `Ana fikri tam yakalamışsın!`,
+            dateAdded: daysOffsetIso(-5)
+          },
+          {
+            id: `book-305`,
+            studentId: `stu-3`,
+            title: `Bilim İnsanları Nasıl Düşünür?`,
+            author: `Çağrı Yalgın`,
+            genre: `Bilim & Keşif`,
+            pages: 112,
+            rating: 5,
+            reflection: `Soru sormanın hata yapmaktan korkmamak kadar önemli olduğunu anladım.`,
+            status: `approved`,
+            teacherNote: `Meraklı okur rozetine çok yakışan bir yorum.`,
+            dateAdded: daysOffsetIso(-2)
+          },
+          {
+            id: `book-306`,
+            studentId: `stu-3`,
+            title: `Kırmızı Tilkinin Günlüğü`,
+            author: `Sara Şahinkanat`,
+            genre: `Doğa & Hayvanlar`,
+            pages: 64,
+            rating: 5,
+            reflection: `Tilkinin sonbahar hazırlıkları ve resimlerin renkleri çok sıcaktı.`,
+            status: `pending`,
+            teacherNote: ``,
+            dateAdded: daysOffsetIso(0)
+          },
+          {
+            id: `book-401`,
+            studentId: `stu-4`,
+            title: `Hazine Adası`,
+            author: `Robert Louis Stevenson`,
+            genre: `Macera`,
+            pages: 144,
+            rating: 5,
+            reflection: `Jim'in gemideki cesaretine bayıldım. Haritadaki gizemi çözmeye çalışırken çok heyecanlandım.`,
+            status: `approved`,
+            teacherNote: `Güzel bir macera seçimi Mert.`,
+            dateAdded: daysOffsetIso(-15)
+          },
+          {
+            id: `book-402`,
+            studentId: `stu-4`,
+            title: `Anadolu Masalları`,
+            author: `Eflatun Cem Güney`,
+            genre: `Masal & Fabl`,
+            pages: 110,
+            rating: 4,
+            reflection: `Keloğlan'ın zekâsıyla zor durumlardan kurtulması çok hoşuma gitti.`,
+            status: `approved`,
+            teacherNote: `Tebrikler!`,
+            dateAdded: daysOffsetIso(-12)
+          },
+          {
+            id: `book-403`,
+            studentId: `stu-4`,
+            title: `Mucitler Kulübü`,
+            author: `Tülin Kozikoğlu`,
+            genre: `Bilim & Keşif`,
+            pages: 92,
+            rating: 5,
+            reflection: `Atık kutulardan robot yapma fikrini hafta sonu denemek istiyorum.`,
+            status: `approved`,
+            teacherNote: `Yaratıcı fikirlerini bekliyorum Mert.`,
+            dateAdded: daysOffsetIso(-10)
+          },
+          {
+            id: `book-501`,
+            studentId: `stu-5`,
+            title: `Pino'nun Renkli Bahçesi`,
+            author: `Feridun Oral`,
+            genre: `Doğa & Hayvanlar`,
+            pages: 48,
+            rating: 5,
+            reflection: `Bütün çiçeklerin farklı renkte olmasının bahçeyi güzelleştirdiğini fark ettim.`,
+            status: `approved`,
+            teacherNote: `Çok tatlı bir gözlem Defne!`,
+            dateAdded: daysOffsetIso(-6)
+          },
+          {
+            id: `book-502`,
+            studentId: `stu-5`,
+            title: `Mavi Gezegenin Sırrı`,
+            author: `Mavisel Yener`,
+            genre: `Macera`,
+            pages: 116,
+            rating: 4,
+            reflection: `Sularımızı temiz tutarsak deniz canlılarının da mutlu yaşayacağını anlatıyor.`,
+            status: `pending`,
+            teacherNote: ``,
+            dateAdded: daysOffsetIso(-1)
+          },
+          {
+            id: `book-601`,
+            studentId: `stu-6`,
+            title: `Kurtuluş Kahramanları`,
+            author: `İbrahim Öztürk`,
+            genre: `Tarih & Biyografi`,
+            pages: 108,
+            rating: 5,
+            reflection: `Kahramanlarımızın vatan sevgisi ve fedakârlıkları beni çok gururlandırdı.`,
+            status: `approved`,
+            teacherNote: `Duygularını güzel ifade etmişsin Arda.`,
+            dateAdded: daysOffsetIso(-13)
+          },
+          {
+            id: `book-602`,
+            studentId: `stu-6`,
+            title: `Dedektif Kedi Mırmır`,
+            author: `Şermin Yaşar`,
+            genre: `Mizah`,
+            pages: 96,
+            rating: 4,
+            reflection: `Güzeldi.`,
+            status: `rejected`,
+            teacherNote: `Arda'cığım, kitabın en sevdiğin bölümünü veya kahramanını anlatan en az 2 cümle daha ekleyip tekrar gönderebilir misin?`,
+            dateAdded: daysOffsetIso(-5)
+          }
+        ]
+      };
+    }
+
+    // =========================================================================
+    // 3. APPLICATION STATE & PERSISTENCE
+    // =========================================================================
+    let appState = createSampleState();
+    let formRating = 5;
+    let genreChartInstance = null;
+    let studentChartInstance = null;
+
+    async function persistState() {
+      const syncEl = document.getElementById(`footer-sync-status`);
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === `function`) {
+          await window.notebookAppApi.setAppState(appState);
+          if (syncEl) syncEl.textContent = `Son kayıt: ${new Date().toLocaleTimeString(`tr-TR`, { hour: `2-digit`, minute: `2-digit` })}`;
+        }
+      } catch (err) {
+        if (syncEl) syncEl.textContent = `Yerel oturumda aktif.`;
+      }
+    }
+
+    // =========================================================================
+    // 4. COMPUTED ANALYTICS & BADGES
+    // =========================================================================
+    function getStudentEntries(studentId) {
+      return appState.entries.filter(function (e) { return e.studentId === studentId; });
+    }
+
+    function computeStudentStats(studentId) {
+      const entries = getStudentEntries(studentId);
+      const approved = entries.filter(function (e) { return e.status === `approved`; });
+      const pending = entries.filter(function (e) { return e.status === `pending`; });
+      const rejected = entries.filter(function (e) { return e.status === `rejected`; });
+
+      const totalPages = approved.reduce(function (acc, item) { return acc + (Number(item.pages) || 0); }, 0);
+      const uniqueGenres = new Set(approved.map(function (item) { return item.genre; })).size;
+      const weeklyCount = entries.filter(function (item) { return isWithinLast7Days(item.dateAdded); }).length;
+
+      // Favorite genre
+      const genreCounts = {};
+      approved.forEach(function (item) {
+        genreCounts[item.genre] = (genreCounts[item.genre] || 0) + 1;
+      });
+      let favGenre = `—`;
+      let maxCount = 0;
+      Object.keys(genreCounts).forEach(function (g) {
+        if (genreCounts[g] > maxCount) {
+          maxCount = genreCounts[g];
+          favGenre = g;
+        }
+      });
+
+      // Latest entry date
+      let latestDate = ``;
+      entries.forEach(function (item) {
+        if (!latestDate || item.dateAdded > latestDate) latestDate = item.dateAdded;
+      });
+
+      const goal = Math.max(1, Number(appState.goalBooks) || 10);
+      const progressPct = Math.min(100, Math.round((approved.length / goal) * 100));
+
+      // Dynamic Badges
+      const badges = [
+        {
+          id: `first-page`,
+          title: `İlk Sayfa Rozeti`,
+          desc: `İlk onaylı kitabını günlüğüne ekle`,
+          icon: `feather`,
+          unlocked: approved.length >= 1,
+          current: Math.min(approved.length, 1),
+          target: 1,
+          unit: `kitap`
+        },
+        {
+          id: `word-hunter`,
+          title: `Kelime Avcısı`,
+          desc: `En az 3 farklı türde kitap oku`,
+          icon: `compass`,
+          unlocked: uniqueGenres >= 3,
+          current: Math.min(uniqueGenres, 3),
+          target: 3,
+          unit: `tür`
+        },
+        {
+          id: `page-traveler`,
+          title: `Sayfa Seyyahı`,
+          desc: `Toplam 250 onaylı sayfaya ulaş`,
+          icon: `book-open`,
+          unlocked: totalPages >= 250,
+          current: Math.min(totalPages, 250),
+          target: 250,
+          unit: `sayfa`
+        },
+        {
+          id: `weekly-diarist`,
+          title: `Haftanın Günlükçüsü`,
+          desc: `Son 7 günde en az 2 kitap kaydet`,
+          icon: `sparkles`,
+          unlocked: weeklyCount >= 2,
+          current: Math.min(weeklyCount, 2),
+          target: 2,
+          unit: `kayıt`
+        },
+        {
+          id: `journal-master`,
+          title: `Günlük Üstadı`,
+          desc: `Sınıf hedefi olan ${goal} kitaba ulaş`,
+          icon: `trophy`,
+          unlocked: approved.length >= goal,
+          current: Math.min(approved.length, goal),
+          target: goal,
+          unit: `kitap`
+        }
+      ];
+
+      const unlockedCount = badges.filter(function (b) { return b.unlocked; }).length;
+
+      return {
+        entries: entries,
+        approved: approved,
+        pending: pending,
+        rejected: rejected,
+        totalPages: totalPages,
+        uniqueGenres: uniqueGenres,
+        weeklyCount: weeklyCount,
+        favGenre: favGenre,
+        latestDate: latestDate,
+        progressPct: progressPct,
+        badges: badges,
+        unlockedCount: unlockedCount
+      };
+    }
+
+    // =========================================================================
+    // 5. NAVIGATION & GLOBAL UI
+    // =========================================================================
+    function showBanner(text, variant) {
+      const el = document.getElementById(`global-banner`);
+      const txt = document.getElementById(`global-banner-text`);
+      if (!el || !txt) return;
+      el.className = `inline-banner`;
+      if (variant === `error`) el.classList.add(`is-error`);
+      if (variant === `warning`) el.classList.add(`is-warning`);
+      txt.textContent = text;
+    }
+
+    function hideBanner() {
+      const el = document.getElementById(`global-banner`);
+      if (el) el.classList.add(`is-hidden`);
+    }
+
+    function switchView(viewName) {
+      appState.activeView = viewName;
+      const views = [`student`, `teacher`, `reports`];
+      views.forEach(function (v) {
+        const panel = document.getElementById(`view-${v}`);
+        const tab = document.getElementById(`tab-${v}`);
+        if (panel) {
+          if (v === viewName) panel.classList.remove(`is-hidden`);
+          else panel.classList.add(`is-hidden`);
+        }
+        if (tab) {
+          if (v === viewName) tab.classList.add(`is-active`);
+          else tab.classList.remove(`is-active`);
+        }
+      });
+
+      renderAll();
+      persistState();
+    }
+
+    function renderHeaderMeta() {
+      const pendingCount = appState.entries.filter(function (e) { return e.status === `pending`; }).length;
+      const pendingBadge = document.getElementById(`nav-pending-count`);
+      if (pendingBadge) pendingBadge.textContent = String(pendingCount);
+
+      const classChip = document.getElementById(`header-class-chip`);
+      if (classChip) classChip.textContent = appState.className;
+
+      const goalChip = document.getElementById(`header-goal-chip`);
+      if (goalChip) goalChip.textContent = `Hedef: ${appState.goalBooks} Kitap`;
+
+      const daysLeft = calcDaysRemaining(appState.goalEndDate);
+      const daysChip = document.getElementById(`header-days-chip`);
+      if (daysChip) daysChip.textContent = `${daysLeft} gün kaldı`;
+    }
+
+    // =========================================================================
+    // 6. STUDENT PANEL FUNCTIONS & RENDERING
+    // =========================================================================
+    function selectStudent(studentId) {
+      appState.activeStudentId = studentId;
+      const entries = getStudentEntries(studentId);
+      appState.selectedBookId = entries.length > 0 ? entries[0].id : ``;
+      cancelEditEntry();
+      renderStudentPanel();
+      persistState();
+    }
+
+    function cycleGreeting() {
+      appState.greetingIndex = (appState.greetingIndex + 1) % GREETING_MESSAGES.length;
+      renderStudentPanel();
+      persistState();
+    }
+
+    function focusBookForm() {
+      const titleInput = document.getElementById(`book-title`);
+      if (titleInput) {
+        titleInput.scrollIntoView({ behavior: `smooth`, block: `center` });
+        titleInput.focus();
+      }
+    }
+
+    function setShelfFilter(filterKey) {
+      appState.shelfFilter = filterKey;
+      [`all`, `approved`, `pending`].forEach(function (k) {
+        const btn = document.getElementById(`shelf-filter-${k}`);
+        if (btn) {
+          if (k === filterKey) btn.classList.add(`is-active`);
+          else btn.classList.remove(`is-active`);
+        }
+      });
+      renderBookshelf();
+      persistState();
+    }
+
+    function selectBookVolume(bookId) {
+      appState.selectedBookId = bookId;
+      renderBookshelf();
+      renderBookDetail();
+      persistState();
+    }
+
+    function setFormRating(val) {
+      formRating = Number(val) || 5;
+      const buttons = document.querySelectorAll(`.star-btn`);
+      buttons.forEach(function (btn) {
+        const starVal = Number(btn.getAttribute(`data-star`));
+        if (starVal <= formRating) btn.classList.add(`is-selected`);
+        else btn.classList.remove(`is-selected`);
+      });
+      const label = document.getElementById(`rating-label-text`);
+      if (label) label.textContent = RATING_LABELS[formRating] || `${formRating} / 5`;
+    }
+
+    function updateCharCount(val) {
+      const el = document.getElementById(`reflection-char-count`);
+      if (!el) return;
+      const len = val.trim().length;
+      el.textContent = len < 15
+        ? `${len} / 500 karakter (en az 15 karakter yaz)`
+        : `${len} / 500 karakter — Harika görünüyor!`;
+    }
+
+    function startEditEntry(entryId) {
+      const entry = appState.entries.find(function (e) { return e.id === entryId; });
+      if (!entry) return;
+      const editIdEl = document.getElementById(`editing-entry-id`);
+      const titleEl = document.getElementById(`book-title`);
+      const authorEl = document.getElementById(`book-author`);
+      const genreEl = document.getElementById(`book-genre`);
+      const pagesEl = document.getElementById(`book-pages`);
+      const reflEl = document.getElementById(`book-reflection`);
+      const submitBtn = document.getElementById(`submit-book-btn`);
+      const cancelBtn = document.getElementById(`cancel-edit-btn`);
+
+      if (editIdEl) editIdEl.value = entry.id;
+      if (titleEl) titleEl.value = entry.title;
+      if (authorEl) authorEl.value = entry.author;
+      if (genreEl) genreEl.value = entry.genre;
+      if (pagesEl) pagesEl.value = entry.pages;
+      if (reflEl) {
+        reflEl.value = entry.reflection;
+        updateCharCount(entry.reflection);
+      }
+      setFormRating(entry.rating);
+      if (submitBtn) submitBtn.innerHTML = `<i data-lucide="check" width="18" height="18" aria-hidden="true"></i><span>Düzenle ve Tekrar Gönder</span>`;
+      if (cancelBtn) cancelBtn.classList.remove(`is-hidden`);
+      if (window.lucide) window.lucide.createIcons();
+      focusBookForm();
+    }
+
+    function cancelEditEntry() {
+      const form = document.getElementById(`book-entry-form`);
+      const editIdEl = document.getElementById(`editing-entry-id`);
+      const submitBtn = document.getElementById(`submit-book-btn`);
+      const cancelBtn = document.getElementById(`cancel-edit-btn`);
+      const feedback = document.getElementById(`form-feedback`);
+      if (form) form.reset();
+      if (editIdEl) editIdEl.value = ``;
+      setFormRating(5);
+      updateCharCount(``);
+      if (submitBtn) submitBtn.innerHTML = `<i data-lucide="book-marked" width="18" height="18" aria-hidden="true"></i><span>Günlüğüme Kaydet</span>`;
+      if (cancelBtn) cancelBtn.classList.add(`is-hidden`);
+      if (feedback) feedback.classList.add(`is-hidden`);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function handleBookSubmit(event) {
+      event.preventDefault();
+      const feedback = document.getElementById(`form-feedback`);
+      const editIdEl = document.getElementById(`editing-entry-id`);
+      const titleEl = document.getElementById(`book-title`);
+      const authorEl = document.getElementById(`book-author`);
+      const genreEl = document.getElementById(`book-genre`);
+      const pagesEl = document.getElementById(`book-pages`);
+      const reflEl = document.getElementById(`book-reflection`);
+
+      const title = titleEl ? titleEl.value.trim() : ``;
+      const author = authorEl ? authorEl.value.trim() : ``;
+      const genre = genreEl ? genreEl.value : `Macera`;
+      const pages = pagesEl ? parseInt(pagesEl.value, 10) : 0;
+      const reflection = reflEl ? reflEl.value.trim() : ``;
+
+      if (!title || !author) {
+        if (feedback) {
+          feedback.className = `inline-banner is-error`;
+          feedback.textContent = `Lütfen kitap adı ve yazar alanlarını eksiksiz doldurun.`;
+        }
+        return;
+      }
+
+      if (isNaN(pages) || pages < 5 || pages > 1200) {
+        if (feedback) {
+          feedback.className = `inline-banner is-error`;
+          feedback.textContent = `Sayfa sayısı 5 ile 1200 arasında geçerli bir sayı olmalıdır.`;
+        }
+        return;
+      }
+
+      if (reflection.length < 15) {
+        if (feedback) {
+          feedback.className = `inline-banner is-error`;
+          feedback.textContent = `Günlük notun çok kısa. Kitapla ilgili düşüncelerini en az 15 karakterle paylaşır mısın?`;
+        }
+        return;
+      }
+
+      const editId = editIdEl ? editIdEl.value : ``;
+      if (editId) {
+        const idx = appState.entries.findIndex(function (e) { return e.id === editId; });
+        if (idx !== -1) {
+          appState.entries[idx].title = title;
+          appState.entries[idx].author = author;
+          appState.entries[idx].genre = genre;
+          appState.entries[idx].pages = pages;
+          appState.entries[idx].rating = formRating;
+          appState.entries[idx].reflection = reflection;
+          appState.entries[idx].status = `pending`;
+          appState.entries[idx].dateAdded = formatIsoDate(new Date());
+          appState.selectedBookId = editId;
+        }
+      } else {
+        const newId = `book-${Date.now()}`;
+        const newEntry = {
+          id: newId,
+          studentId: appState.activeStudentId,
+          title: title,
+          author: author,
+          genre: genre,
+          pages: pages,
+          rating: formRating,
+          reflection: reflection,
+          status: `pending`,
+          teacherNote: ``,
+          dateAdded: formatIsoDate(new Date())
+        };
+        appState.entries.unshift(newEntry);
+        appState.selectedBookId = newId;
+      }
+
+      cancelEditEntry();
+      renderAll();
+      persistState();
+
+      if (feedback) {
+        feedback.className = `inline-banner`;
+        feedback.textContent = `Harika! "${title}" günlüğüne kaydedildi ve öğretmen onayına gönderildi.`;
+      }
+    }
+
+    function renderStudentPanel() {
+      const select = document.getElementById(`student-select`);
+      if (select) {
+        if (appState.students.length === 0) {
+          select.innerHTML = `<option value="">Henüz öğrenci yok</option>`;
+        } else {
+          const validStudent = appState.students.some(function (s) { return s.id === appState.activeStudentId; });
+          if (!validStudent) appState.activeStudentId = appState.students[0].id;
+          select.innerHTML = appState.students.map(function (s) {
+            const sel = s.id === appState.activeStudentId ? `selected` : ``;
+            return `<option value="${escapeHtml(s.id)}" ${sel}>${escapeHtml(s.name)} — ${escapeHtml(appState.className)}</option>`;
+          }).join(``);
+        }
+      }
+
+      const activeStudent = appState.students.find(function (s) { return s.id === appState.activeStudentId; });
+      const pinEl = document.getElementById(`student-pin-badge`);
+      if (pinEl) {
+        pinEl.textContent = activeStudent ? `Günlük Kodu: #${activeStudent.pin}` : `Kod Yok`;
+      }
+
+      const greetEl = document.getElementById(`student-greeting-text`);
+      if (greetEl) {
+        const firstName = activeStudent ? activeStudent.name.split(` `)[0] : `Minik Okur`;
+        const templateMsg = GREETING_MESSAGES[appState.greetingIndex % GREETING_MESSAGES.length];
+        greetEl.textContent = `“${templateMsg.replace(`Minik Okur`, firstName)}”`;
+      }
+
+      const stats = activeStudent ? computeStudentStats(activeStudent.id) : {
+        approved: [], pending: [], totalPages: 0, progressPct: 0, badges: [], unlockedCount: 0
+      };
+
+      const goal = Math.max(1, Number(appState.goalBooks) || 10);
+      const fracEl = document.getElementById(`student-goal-fraction`);
+      if (fracEl) fracEl.textContent = `${stats.approved.length} / ${goal}`;
+
+      const pctEl = document.getElementById(`student-goal-percent`);
+      if (pctEl) pctEl.textContent = `%${stats.progressPct} Tamamlandı`;
+
+      const barEl = document.getElementById(`student-goal-bar`);
+      const barWrap = document.getElementById(`student-goal-bar-wrap`);
+      if (barEl) barEl.style.width = `${stats.progressPct}%`;
+      if (barWrap) barWrap.setAttribute(`aria-valuenow`, String(stats.progressPct));
+
+      const pagesEl = document.getElementById(`student-total-pages`);
+      if (pagesEl) pagesEl.textContent = String(stats.totalPages);
+
+      const pendingEl = document.getElementById(`student-pending-books`);
+      if (pendingEl) pendingEl.textContent = String(stats.pending.length);
+
+      const daysEl = document.getElementById(`student-days-left`);
+      if (daysEl) daysEl.textContent = `${calcDaysRemaining(appState.goalEndDate)} gün`;
+
+      renderBookshelf();
+      renderBookDetail();
+      renderStudentBadges(stats);
+    }
+
+    function renderBookshelf() {
+      const shelfEl = document.getElementById(`virtual-bookshelf`);
+      if (!shelfEl) return;
+
+      const allEntries = getStudentEntries(appState.activeStudentId);
+      const filtered = allEntries.filter(function (e) {
+        if (appState.shelfFilter === `approved`) return e.status === `approved`;
+        if (appState.shelfFilter === `pending`) return e.status === `pending` || e.status === `rejected`;
+        return true;
+      });
+
+      if (allEntries.length === 0) {
+        shelfEl.innerHTML = `
+          <div class="empty-state">
+            <i data-lucide="library" width="32" height="32" aria-hidden="true"></i>
+            <h3>Kitaplığın henüz boş görünüyor</h3>
+            <p class="field-hint" style="max-width: 44ch;">Sağdaki formdan okuduğun ilk kitabı ekleyerek raflarını renklendirebilir ve <strong>İlk Sayfa Rozeti</strong> kazanabilirsin.</p>
+            <button type="button" class="btn btn-primary btn-sm" onclick="focusBookForm()">İlk Kitabımı Ekle</button>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      if (filtered.length === 0) {
+        shelfEl.innerHTML = `
+          <div class="empty-state">
+            <p class="field-hint">Bu filtrede gösterilecek kitap bulunamadı.</p>
+            <button type="button" class="btn btn-tertiary btn-sm" onclick="setShelfFilter('all')">Tüm Kitapları Göster</button>
+          </div>
+        `;
+        return;
+      }
+
+      // Chunk books into shelves of 3 or 4 per wooden shelf ledge
+      const rows = [];
+      for (let i = 0; i < filtered.length; i += 3) {
+        rows.push(filtered.slice(i, i + 3));
+      }
+
+      shelfEl.innerHTML = rows.map(function (row) {
+        const booksHtml = row.map(function (book) {
+          const isSelected = book.id === appState.selectedBookId ? `is-selected` : ``;
+          const statusClass = book.status === `approved` ? `is-approved` : (book.status === `rejected` ? `is-rejected` : `is-pending`);
+          const statusText = book.status === `approved` ? `Onaylı` : (book.status === `rejected` ? `Düzenle` : `Bekliyor`);
+          return `
+            <button type="button" class="book-volume ${isSelected}" data-genre="${escapeHtml(book.genre)}" onclick="selectBookVolume('${escapeHtml(book.id)}')">
+              <div>
+                <span class="status-badge ${statusClass}">${statusText}</span>
+                <div class="book-vol-title" style="margin-top: var(--space-sm);">${escapeHtml(book.title)}</div>
+                <div class="book-vol-author">${escapeHtml(book.author)}</div>
+              </div>
+              <div class="book-vol-meta">
+                <span>${escapeHtml(book.genre)}</span>
+                <span>${book.pages} s.</span>
+              </div>
+            </button>
+          `;
+        }).join(``);
+        return `<div class="shelf-row">${booksHtml}</div>`;
+      }).join(``);
+    }
+
+    function renderBookDetail() {
+      const detailEl = document.getElementById(`selected-book-detail`);
+      if (!detailEl) return;
+
+      const entries = getStudentEntries(appState.activeStudentId);
+      const book = entries.find(function (e) { return e.id === appState.selectedBookId; }) || entries[0];
+      if (!book) {
+        detailEl.classList.add(`is-hidden`);
+        return;
+      }
+
+      appState.selectedBookId = book.id;
+      detailEl.classList.remove(`is-hidden`);
+
+      const statusLabel = book.status === `approved`
+        ? `Öğretmen Onaylı`
+        : (book.status === `rejected` ? `Düzenleme Gerekli` : `Öğretmen Onayı Bekliyor`);
+      const statusClass = book.status === `approved` ? `is-approved` : (book.status === `rejected` ? `is-rejected` : `is-pending`);
+
+      let teacherBox = ``;
+      if (book.teacherNote) {
+        const rejClass = book.status === `rejected` ? `is-rejected` : ``;
+        teacherBox = `
+          <div class="teacher-note-box ${rejClass}">
+            <span class="field-label">${book.status === `rejected` ? `Düzenleme İsteyen Öğretmen Notu` : `Öğretmen Notu`}</span>
+            <p>${escapeHtml(book.teacherNote)}</p>
+          </div>
+        `;
+      }
+
+      const editAction = book.status !== `approved`
+        ? `<button type="button" class="btn btn-secondary btn-sm" onclick="startEditEntry('${escapeHtml(book.id)}')">
+             <i data-lucide="edit-3" width="16" height="16" aria-hidden="true"></i>
+             <span>Kaydı Düzenle</span>
+           </button>`
+        : ``;
+
+      detailEl.innerHTML = `
+        <div style="display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: var(--space-sm);">
+          <div>
+            <span class="status-badge ${statusClass}">${statusLabel}</span>
+            <h3 style="font-size: var(--headline-size); margin-top: var(--space-xs);">${escapeHtml(book.title)}</h3>
+            <p class="field-hint">${escapeHtml(book.author)} · ${escapeHtml(book.genre)} · ${book.pages} sayfa · ${formatTurkishDate(book.dateAdded)}</p>
+          </div>
+          <span class="chip is-mustard" aria-label="${book.rating} üzerinden 5 yıldız">${renderStarsText(book.rating)}</span>
+        </div>
+
+        <div>
+          <span class="field-label">Günlük Notum</span>
+          <blockquote class="reflection-quote" style="margin: var(--space-xs) 0 0;">“${escapeHtml(book.reflection)}”</blockquote>
+        </div>
+
+        ${teacherBox}
+        ${editAction ? `<div>${editAction}</div>` : ``}
+      `;
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderStudentBadges(stats) {
+      const grid = document.getElementById(`student-badges-grid`);
+      const countEl = document.getElementById(`student-badges-count`);
+      if (countEl) countEl.textContent = `${stats.unlockedCount} / ${stats.badges.length} Rozet`;
+      if (!grid) return;
+
+      grid.innerHTML = stats.badges.map(function (b) {
+        const unlockedClass = b.unlocked ? `is-unlocked` : ``;
+        const pct = Math.min(100, Math.round((b.current / Math.max(1, b.target)) * 100));
+        const statusChip = b.unlocked
+          ? `<span class="chip">Kazanıldı</span>`
+          : `<span class="field-hint">${b.current} / ${b.target} ${b.unit}</span>`;
+
+        return `
+          <div class="badge-card ${unlockedClass}">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);">
+              <span class="badge-icon-wrap">
+                <i data-lucide="${b.icon}" width="20" height="20" aria-hidden="true"></i>
+              </span>
+              ${statusChip}
+            </div>
+            <div>
+              <h3 class="badge-title">${escapeHtml(b.title)}</h3>
+              <p class="field-hint" style="margin-top: 2px;">${escapeHtml(b.desc)}</p>
+            </div>
+            <div class="progress-track" style="height: 8px;">
+              <div class="progress-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join(``);
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // =========================================================================
+    // 7. TEACHER PANEL FUNCTIONS & RENDERING
+    // =========================================================================
+    function updateClassSettings() {
+      const nameEl = document.getElementById(`setting-class-name`);
+      const goalEl = document.getElementById(`setting-goal-books`);
+      const dateEl = document.getElementById(`setting-end-date`);
+
+      if (nameEl && nameEl.value.trim()) appState.className = nameEl.value.trim();
+      if (goalEl) {
+        const g = parseInt(goalEl.value, 10);
+        if (!isNaN(g) && g >= 1 && g <= 50) appState.goalBooks = g;
+      }
+      if (dateEl && dateEl.value) appState.goalEndDate = dateEl.value;
+
+      renderHeaderMeta();
+      renderTeacherPanel();
+      persistState();
+      showBanner(`Sınıf ayarları güncellendi.`, `success`);
+    }
+
+    function addNewStudent() {
+      const input = document.getElementById(`new-student-name`);
+      if (!input) return;
+      const name = input.value.trim();
+      if (name.length < 2) {
+        showBanner(`Lütfen eklemek istediğiniz öğrencinin adını ve soyadını yazın.`, `error`);
+        return;
+      }
+      const nextPin = String(3041 + appState.students.length + Math.floor(Math.random() * 50));
+      const newStu = {
+        id: `stu-${Date.now()}`,
+        name: name,
+        pin: nextPin
+      };
+      appState.students.push(newStu);
+      appState.teacherSelectedStudentId = newStu.id;
+      input.value = ``;
+      renderAll();
+      persistState();
+      showBanner(`${name} sınıf listesine eklendi (Günlük Kodu: #${nextPin}).`, `success`);
+    }
+
+    function toggleAccessCards() {
+      const drawer = document.getElementById(`access-cards-drawer`);
+      if (!drawer) return;
+      drawer.classList.toggle(`is-hidden`);
+      renderAccessCards();
+    }
+
+    function renderAccessCards() {
+      const grid = document.getElementById(`access-cards-grid`);
+      if (!grid) return;
+      grid.innerHTML = appState.students.map(function (s) {
+        return `
+          <div class="pin-card">
+            <span class="field-label">${escapeHtml(appState.className)}</span>
+            <strong style="font-size: 1.0625rem;">${escapeHtml(s.name)}</strong>
+            <span class="chip is-mustard" style="width: fit-content;">Günlük PIN: #${escapeHtml(s.pin)}</span>
+          </div>
+        `;
+      }).join(``);
+    }
+
+    function handleResetClass(btn) {
+      if (btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.innerHTML = `<i data-lucide="alert-triangle" width="16" height="16" aria-hidden="true"></i><span>Emin misiniz? Tekrar Tıklayın</span>`;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+      btn.dataset.armed = `false`;
+      btn.innerHTML = `<i data-lucide="rotate-ccw" width="16" height="16" aria-hidden="true"></i><span>Sınıf Kayıtlarını Temizle</span>`;
+      appState.entries = [];
+      appState.selectedBookId = ``;
+      renderAll();
+      persistState();
+      showBanner(`Tüm kitap günlük kayıtları temizlendi. Yeni kayıtlar eklemeye başlayabilirsiniz.`, `warning`);
+    }
+
+    function restoreSampleClass() {
+      const sample = createSampleState();
+      appState.students = sample.students;
+      appState.entries = sample.entries;
+      appState.className = sample.className;
+      appState.goalBooks = sample.goalBooks;
+      appState.goalEndDate = sample.goalEndDate;
+      appState.activeStudentId = sample.activeStudentId;
+      appState.teacherSelectedStudentId = sample.teacherSelectedStudentId;
+      appState.selectedBookId = sample.selectedBookId;
+      renderAll();
+      persistState();
+      showBanner(`Örnek 3-A sınıf verileri yeniden yüklendi.`, `success`);
+    }
+
+    function setTeacherFilter(filterKey) {
+      appState.teacherFilter = filterKey;
+      appState.teacherQueueMode = false;
+      [`all`, `pending`, `none`, `week`].forEach(function (k) {
+        const btn = document.getElementById(`tfilter-${k}`);
+        if (btn) {
+          if (k === filterKey) btn.classList.add(`is-active`);
+          else btn.classList.remove(`is-active`);
+        }
+      });
+      renderTeacherPanel();
+      persistState();
+    }
+
+    function setTeacherSearch(query) {
+      appState.teacherSearch = query;
+      renderTeacherPanel();
+    }
+
+    function selectTeacherStudent(studentId) {
+      appState.teacherSelectedStudentId = studentId;
+      appState.teacherQueueMode = false;
+      renderTeacherPanel();
+      persistState();
+    }
+
+    function togglePendingQueueMode() {
+      appState.teacherQueueMode = !appState.teacherQueueMode;
+      renderTeacherPanel();
+      persistState();
+    }
+
+    function getFilteredTeacherStudents() {
+      const query = (appState.teacherSearch || ``).trim().toLocaleLowerCase(`tr-TR`);
+      return appState.students.filter(function (s) {
+        if (query && !s.name.toLocaleLowerCase(`tr-TR`).includes(query)) return false;
+        const stats = computeStudentStats(s.id);
+        if (appState.teacherFilter === `pending`) return stats.pending.length > 0;
+        if (appState.teacherFilter === `none`) return stats.entries.length === 0;
+        if (appState.teacherFilter === `week`) return stats.weeklyCount > 0;
+        return true;
+      });
+    }
+
+    function reviewJournalEntry(entryId, decision) {
+      const entry = appState.entries.find(function (e) { return e.id === entryId; });
+      if (!entry) return;
+      const noteInput = document.getElementById(`teacher-note-${entryId}`);
+      const errorBox = document.getElementById(`teacher-error-${entryId}`);
+      const noteText = noteInput ? noteInput.value.trim() : ``;
+
+      if (decision === `rejected` && noteText.length < 5) {
+        if (errorBox) {
+          errorBox.classList.remove(`is-hidden`);
+          errorBox.textContent = `Reddetme veya düzenleme isteme işlemi için lütfen kısa bir gerekçe notu yazın.`;
+        }
+        if (noteInput) noteInput.focus();
+        return;
+      }
+
+      if (errorBox) errorBox.classList.add(`is-hidden`);
+      entry.status = decision;
+      entry.teacherNote = noteText || (decision === `approved` ? `Tebrikler, harika bir okuma kaydı!` : noteText);
+
+      renderAll();
+      persistState();
+      showBanner(
+        decision === `approved`
+          ? `"${entry.title}" onaylandı ve öğrencinin rozetleri güncellendi.`
+          : `"${entry.title}" için düzenleme talebi öğrenciye iletildi.`,
+        decision === `approved` ? `success` : `warning`
+      );
+    }
+
+    function renderTeacherPanel() {
+      const nameEl = document.getElementById(`setting-class-name`);
+      const goalEl = document.getElementById(`setting-goal-books`);
+      const dateEl = document.getElementById(`setting-end-date`);
+      if (nameEl) nameEl.value = appState.className;
+      if (goalEl) goalEl.value = appState.goalBooks;
+      if (dateEl) dateEl.value = appState.goalEndDate;
+
+      // Update filter counts
+      const allCount = appState.students.length;
+      const pendStuCount = appState.students.filter(function (s) { return computeStudentStats(s.id).pending.length > 0; }).length;
+      const noneStuCount = appState.students.filter(function (s) { return computeStudentStats(s.id).entries.length === 0; }).length;
+      const weekStuCount = appState.students.filter(function (s) { return computeStudentStats(s.id).weeklyCount > 0; }).length;
+
+      const fAll = document.getElementById(`tfilter-all`);
+      const fPen = document.getElementById(`tfilter-pending`);
+      const fNon = document.getElementById(`tfilter-none`);
+      const fWek = document.getElementById(`tfilter-week`);
+      if (fAll) fAll.textContent = `Tümü (${allCount})`;
+      if (fPen) fPen.textContent = `Onay bekleyenler (${pendStuCount})`;
+      if (fNon) fNon.textContent = `Hiç kitap girmeyenler (${noneStuCount})`;
+      if (fWek) fWek.textContent = `Bu hafta okuyanlar (${weekStuCount})`;
+
+      const queueBtn = document.getElementById(`queue-mode-btn`);
+      if (queueBtn) {
+        queueBtn.className = appState.teacherQueueMode ? `btn btn-primary btn-sm` : `btn btn-secondary btn-sm`;
+        queueBtn.innerHTML = appState.teacherQueueMode
+          ? `<i data-lucide="users" width="16" height="16" aria-hidden="true"></i><span>Öğrenci Görünümüne Dön</span>`
+          : `<i data-lucide="clock" width="16" height="16" aria-hidden="true"></i><span>Tüm Bekleyenleri Gör</span>`;
+      }
+
+      const filtered = getFilteredTeacherStudents();
+      const countEl = document.getElementById(`filtered-student-count`);
+      if (countEl) countEl.textContent = String(filtered.length);
+
+      const rosterEl = document.getElementById(`teacher-roster-list`);
+      if (rosterEl) {
+        if (filtered.length === 0) {
+          rosterEl.innerHTML = `
+            <div class="empty-state">
+              <p class="field-hint">Bu filtreye uyan öğrenci bulunamadı.</p>
+            </div>
+          `;
+        } else {
+          const validSelected = filtered.some(function (s) { return s.id === appState.teacherSelectedStudentId; });
+          if (!validSelected) appState.teacherSelectedStudentId = filtered[0].id;
+
+          rosterEl.innerHTML = filtered.map(function (s) {
+            const st = computeStudentStats(s.id);
+            const isSel = !appState.teacherQueueMode && s.id === appState.teacherSelectedStudentId ? `is-selected` : ``;
+            const pendingTag = st.pending.length > 0
+              ? `<span class="status-badge is-pending">${st.pending.length} bekliyor</span>`
+              : (st.entries.length === 0 ? `<span class="status-badge is-rejected">Kayıt yok</span>` : `<span class="status-badge is-approved">Güncel</span>`);
+            return `
+              <button type="button" class="roster-item ${isSel}" onclick="selectTeacherStudent('${escapeHtml(s.id)}')">
+                <div class="roster-item-top">
+                  <strong>${escapeHtml(s.name)}</strong>
+                  ${pendingTag}
+                </div>
+                <div class="book-vol-meta">
+                  <span>Onaylı: ${st.approved.length} / ${appState.goalBooks} kitap</span>
+                  <span>${st.totalPages} sayfa</span>
+                </div>
+              </button>
+            `;
+          }).join(``);
+        }
+      }
+
+      renderTeacherReviewPane(filtered);
+      renderAccessCards();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderTeacherReviewPane(filteredStudents) {
+      const pane = document.getElementById(`teacher-review-pane`);
+      const heading = document.getElementById(`teacher-review-heading`);
+      if (!pane) return;
+
+      let entriesToShow = [];
+      if (appState.teacherQueueMode) {
+        if (heading) heading.textContent = `Tüm Sınıftan Onay Bekleyen Kayıtlar`;
+        entriesToShow = appState.entries.filter(function (e) { return e.status === `pending`; });
+      } else {
+        const stu = appState.students.find(function (s) { return s.id === appState.teacherSelectedStudentId; }) || filteredStudents[0];
+        if (!stu) {
+          if (heading) heading.textContent = `Günlük Kayıtlarını İncele`;
+          pane.innerHTML = `<div class="empty-state"><p class="field-hint">İncelemek için soldan bir öğrenci seçin.</p></div>`;
+          return;
+        }
+        if (heading) heading.textContent = `${stu.name} — Günlük Kayıtları`;
+        entriesToShow = getStudentEntries(stu.id);
+      }
+
+      if (entriesToShow.length === 0) {
+        pane.innerHTML = `
+          <div class="empty-state">
+            <i data-lucide="check-circle-2" width="32" height="32" aria-hidden="true"></i>
+            <h3>${appState.teacherQueueMode ? `Onay bekleyen kayıt kalmadı!` : `Bu öğrencinin henüz kitap kaydı yok`}</h3>
+            <p class="field-hint">${appState.teacherQueueMode ? `Tüm öğrencilerin günlük kayıtları incelendi.` : `Öğrenci kendi panelinden kitap eklediğinde burada görünecek.`}</p>
+          </div>
+        `;
+        return;
+      }
+
+      pane.innerHTML = entriesToShow.map(function (entry) {
+        const stu = appState.students.find(function (s) { return s.id === entry.studentId; });
+        const stuName = stu ? stu.name : `Öğrenci`;
+        const statusClass = entry.status === `approved` ? `is-approved` : (entry.status === `rejected` ? `is-rejected` : `is-pending`);
+        const statusText = entry.status === `approved` ? `Onaylandı` : (entry.status === `rejected` ? `Düzenleme İstendi` : `Onay Bekliyor`);
+
+        return `
+          <article class="review-card">
+            <div class="review-card-header">
+              <div>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-xs);">
+                  <span class="chip is-sand">${escapeHtml(stuName)}</span>
+                  <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <h4 style="font-size: 1.25rem;">${escapeHtml(entry.title)}</h4>
+                <p class="field-hint">${escapeHtml(entry.author)} · ${escapeHtml(entry.genre)} · ${entry.pages} sayfa · ${formatTurkishDate(entry.dateAdded)}</p>
+              </div>
+              <span class="chip is-mustard">${renderStarsText(entry.rating)}</span>
+            </div>
+
+            <div>
+              <span class="field-label">Öğrenci Günlük Notu</span>
+              <blockquote class="reflection-quote" style="margin: var(--space-xs) 0 0;">“${escapeHtml(entry.reflection)}”</blockquote>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="teacher-note-${escapeHtml(entry.id)}">Öğretmen Notu / Geri Bildirim</label>
+              <textarea id="teacher-note-${escapeHtml(entry.id)}" class="textarea-leaf" style="min-height: 76px;" placeholder="Öğrenciye görünecek motive edici not veya reddetme gerekçesi yazın...">${escapeHtml(entry.teacherNote || ``)}</textarea>
+            </div>
+
+            <div id="teacher-error-${escapeHtml(entry.id)}" class="inline-banner is-error is-hidden" role="alert"></div>
+
+            <div class="review-actions-row">
+              <button type="button" class="btn btn-primary btn-sm" onclick="reviewJournalEntry('${escapeHtml(entry.id)}', 'approved')">
+                <i data-lucide="check" width="16" height="16" aria-hidden="true"></i>
+                <span>${entry.status === `approved` ? `Notu Güncelle` : `Onayla`}</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="reviewJournalEntry('${escapeHtml(entry.id)}', 'rejected')">
+                <i data-lucide="x" width="16" height="16" aria-hidden="true"></i>
+                <span>Reddet / Düzenleme İste</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join(``);
+    }
+
+    // =========================================================================
+    // 8. REPORTING & CSV/EXCEL EXPORT
+    // =========================================================================
+    function sortReportTable(key) {
+      if (appState.reportSortKey === key) {
+        appState.reportSortDir = appState.reportSortDir === `desc` ? `asc` : `desc`;
+      } else {
+        appState.reportSortKey = key;
+        appState.reportSortDir = key === `name` ? `asc` : `desc`;
+      }
+      renderReportsPanel();
+      persistState();
+    }
+
+    function getCssVar(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function renderReportsPanel() {
+      const approvedEntries = appState.entries.filter(function (e) { return e.status === `approved`; });
+      const pendingEntries = appState.entries.filter(function (e) { return e.status === `pending`; });
+      const totalPages = approvedEntries.reduce(function (acc, e) { return acc + (Number(e.pages) || 0); }, 0);
+      const studentCount = Math.max(1, appState.students.length);
+
+      const activeReaders = appState.students.filter(function (s) {
+        return getStudentEntries(s.id).length > 0;
+      }).length;
+      const activeRatio = appState.students.length > 0 ? Math.round((activeReaders / appState.students.length) * 100) : 0;
+
+      const classGoalTotal = appState.students.length * Math.max(1, Number(appState.goalBooks) || 10);
+      const classGoalPct = classGoalTotal > 0 ? Math.min(100, Math.round((approvedEntries.length / classGoalTotal) * 100)) : 0;
+
+      const kpiBooks = document.getElementById(`kpi-total-books`);
+      const kpiPend = document.getElementById(`kpi-pending-note`);
+      const kpiPages = document.getElementById(`kpi-total-pages`);
+      const kpiAvg = document.getElementById(`kpi-avg-pages`);
+      const kpiActive = document.getElementById(`kpi-active-ratio`);
+      const kpiActiveDet = document.getElementById(`kpi-active-detail`);
+      const kpiGoal = document.getElementById(`kpi-goal-progress`);
+      const kpiGoalDet = document.getElementById(`kpi-goal-detail`);
+
+      if (kpiBooks) kpiBooks.textContent = String(approvedEntries.length);
+      if (kpiPend) kpiPend.textContent = `${pendingEntries.length} kitap onay bekliyor`;
+      if (kpiPages) kpiPages.textContent = totalPages.toLocaleString(`tr-TR`);
+      if (kpiAvg) kpiAvg.textContent = `Öğrenci başı ort. ${Math.round(totalPages / studentCount)} sayfa`;
+      if (kpiActive) kpiActive.textContent = `%${activeRatio}`;
+      if (kpiActiveDet) kpiActiveDet.textContent = `${activeReaders} / ${appState.students.length} öğrenci kitap ekledi`;
+      if (kpiGoal) kpiGoal.textContent = `%${classGoalPct}`;
+      if (kpiGoalDet) kpiGoalDet.textContent = `${approvedEntries.length} / ${classGoalTotal} sınıf hedefi`;
+
+      // Table rows
+      const rows = appState.students.map(function (s) {
+        const st = computeStudentStats(s.id);
+        return {
+          id: s.id,
+          name: s.name,
+          approved: st.approved.length,
+          pending: st.pending.length,
+          pages: st.totalPages,
+          favGenre: st.favGenre,
+          progress: st.progressPct,
+          badges: st.unlockedCount,
+          latestDate: st.latestDate
+        };
+      });
+
+      rows.sort(function (a, b) {
+        const dir = appState.reportSortDir === `asc` ? 1 : -1;
+        const k = appState.reportSortKey;
+        if (k === `name`) return a.name.localeCompare(b.name, `tr-TR`) * dir;
+        return ((a[k] || 0) - (b[k] || 0)) * dir;
+      });
+
+      const tbody = document.getElementById(`report-table-body`);
+      if (tbody) {
+        if (rows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Henüz öğrenci verisi yok.</td></tr>`;
+        } else {
+          tbody.innerHTML = rows.map(function (r, idx) {
+            const hlClass = idx === 0 && r.approved > 0 ? `is-highlighted` : ``;
+            return `
+              <tr class="${hlClass}">
+                <td><strong>${escapeHtml(r.name)}</strong></td>
+                <td>${r.approved}</td>
+                <td>${r.pending}</td>
+                <td>${r.pages.toLocaleString(`tr-TR`)}</td>
+                <td>${escapeHtml(r.favGenre)}</td>
+                <td>%${r.progress}</td>
+                <td>${r.badges} / 5</td>
+                <td>${formatTurkishDate(r.latestDate)}</td>
+              </tr>
+            `;
+          }).join(``);
+        }
+      }
+
+      if (appState.activeView === `reports`) {
+        renderCharts(approvedEntries);
+      }
+    }
+
+    function renderCharts(approvedEntries) {
+      if (typeof window.Chart === `undefined`) return;
+
+      const c1 = getCssVar(`--data-1`);
+      const c2 = getCssVar(`--data-2`);
+      const c3 = getCssVar(`--data-3`);
+      const c4 = getCssVar(`--data-4`);
+      const ink = getCssVar(`--on-surface`);
+      const gridColor = getCssVar(`--outline-variant`);
+
+      // Genre Chart
+      const genreCanvas = document.getElementById(`genre-chart`);
+      if (genreCanvas) {
+        const counts = {};
+        GENRE_LIST.forEach(function (g) { counts[g] = 0; });
+        approvedEntries.forEach(function (e) {
+          counts[e.genre] = (counts[e.genre] || 0) + 1;
+        });
+        const labels = Object.keys(counts);
+        const values = labels.map(function (l) { return counts[l]; });
+
+        if (genreChartInstance) genreChartInstance.destroy();
+        genreChartInstance = new window.Chart(genreCanvas, {
+          type: `bar`,
+          data: {
+            labels: labels,
+            datasets: [{
+              label: `Onaylı Kitap Sayısı`,
+              data: values,
+              backgroundColor: [c1, c2, c3, c4, c1, c2, c3],
+              borderRadius: 999,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            indexAxis: `y`,
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: { stepSize: 1, color: ink },
+                grid: { color: gridColor }
+              },
+              y: {
+                ticks: { color: ink },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // Student Progress Chart
+      const stuCanvas = document.getElementById(`student-chart`);
+      if (stuCanvas) {
+        const stuLabels = appState.students.map(function (s) { return s.name.split(` `)[0]; });
+        const stuApproved = appState.students.map(function (s) { return computeStudentStats(s.id).approved.length; });
+        const stuPending = appState.students.map(function (s) { return computeStudentStats(s.id).pending.length; });
+
+        if (studentChartInstance) studentChartInstance.destroy();
+        studentChartInstance = new window.Chart(stuCanvas, {
+          type: `bar`,
+          data: {
+            labels: stuLabels,
+            datasets: [
+              {
+                label: `Onaylı`,
+                data: stuApproved,
+                backgroundColor: c1,
+                borderRadius: 8
+              },
+              {
+                label: `Onay Bekleyen`,
+                data: stuPending,
+                backgroundColor: c3,
+                borderRadius: 8
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: `top`,
+                labels: { color: ink }
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ticks: { color: ink },
+                grid: { display: false }
+              },
+              y: {
+                stacked: true,
+                beginAtZero: true,
+                ticks: { stepSize: 1, color: ink },
+                grid: { color: gridColor }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function csvEscape(val) {
+      const s = String(val === null || val === undefined ? `` : val).replace(/"/g, `""`);
+      return `"${s}"`;
+    }
+
+    function exportClassReportCsv() {
+      const lines = [];
+      lines.push([
+        `Sınıf`, `Öğrenci Adı`, `Günlük Kodu`, `Onaylı Kitap`, `Bekleyen Kitap`,
+        `Toplam Sayfa`, `Hedef İlerleme (%)`, `Kazanılan Rozet`, `Son Okuma Tarihi`
+      ].map(csvEscape).join(`;`));
+
+      appState.students.forEach(function (s) {
+        const st = computeStudentStats(s.id);
+        lines.push([
+          appState.className,
+          s.name,
+          `#${s.pin}`,
+          st.approved.length,
+          st.pending.length,
+          st.totalPages,
+          `%${st.progressPct}`,
+          `${st.unlockedCount}/5`,
+          formatTurkishDate(st.latestDate)
+        ].map(csvEscape).join(`;`));
+      });
+
+      lines.push(``);
+      lines.push([
+        `Detaylı Kitap Günlüğü Kayıtları`, ``, ``, ``, ``, ``, ``, ``, ``
+      ].map(csvEscape).join(`;`));
+      lines.push([
+        `Öğrenci`, `Kitap Adı`, `Yazar`, `Tür`, `Sayfa`, `Puan`, `Durum`, `Tarih`, `Öğrenci Notu & Öğretmen Geri Bildirimi`
+      ].map(csvEscape).join(`;`));
+
+      appState.entries.forEach(function (e) {
+        const stu = appState.students.find(function (s) { return s.id === e.studentId; });
+        const stuName = stu ? stu.name : `Bilinmeyen`;
+        const statusTr = e.status === `approved` ? `Onaylı` : (e.status === `rejected` ? `Düzenleme İstendi` : `Bekliyor`);
+        const combinedNote = e.teacherNote ? `${e.reflection} | Öğretmen: ${e.teacherNote}` : e.reflection;
+        lines.push([
+          stuName,
+          e.title,
+          e.author,
+          e.genre,
+          e.pages,
+          `${e.rating}/5`,
+          statusTr,
+          formatTurkishDate(e.dateAdded),
+          combinedNote
+        ].map(csvEscape).join(`;`));
+      });
+
+      const csvContent = `\uFEFF` + lines.join(`\r\n`);
+      const fileDate = formatIsoDate(new Date());
+      const fileName = `kitap_gunlugum_${fileDate}.csv`;
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === `function`) {
+        window.notebookAppApi.triggerFileDownload({
+          content: csvContent,
+          contentType: `text/csv`,
+          encoding: `UTF-8`,
+          filename: fileName
+        });
+      }
+
+      const banner = document.getElementById(`export-status-banner`);
+      if (banner) {
+        banner.className = `inline-banner`;
+        banner.textContent = `${fileName} başarıyla hazırlandı (${appState.students.length} öğrenci ve ${appState.entries.length} günlük kaydı dahil edildi).`;
+      }
+    }
+
+    // =========================================================================
+    // 9. MASTER RENDER & INIT
+    // =========================================================================
+    function renderAll() {
+      renderHeaderMeta();
+      renderStudentPanel();
+      renderTeacherPanel();
+      renderReportsPanel();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function initApp() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && Array.isArray(saved.students) && Array.isArray(saved.entries)) {
+            appState = Object.assign(createSampleState(), saved);
+          }
+        }
+      } catch (err) {
+        // Fallback safely to initial sample state
+      }
+
+      switchView(appState.activeView || `student`);
+      setFormRating(5);
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === `function`) {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    document.addEventListener(`DOMContentLoaded`, function () {
+      initApp();
+    });
+  </script>
+</body>
+</html>
