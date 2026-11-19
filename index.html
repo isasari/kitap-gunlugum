@@ -964,22 +964,26 @@
           <i data-lucide="x" aria-hidden="true"></i>
         </button>
       </div>
-      <p class="muted-note">Kitap kayıtlarını onaylamak, öğrenci QR/PIN kartları üretmek ve e-Okul raporlarını indirmek için şifrenizi girin.</p>
+      <p class="muted-note" id="teacher-login-desc">Kitap kayıtlarını onaylamak, öğrenci QR/PIN kartları üretmek ve e-Okul raporlarını indirmek için giriş yapın.</p>
       <form onsubmit="handleTeacherLogin(event)" class="stack-md">
         <div class="field">
-          <label class="field-label" for="teacher-password-input">Öğretmen Şifresi</label>
+          <label class="field-label" for="teacher-name-input">Öğretmen Adı</label>
+          <input id="teacher-name-input" class="input-control" type="text" placeholder="Adınız Soyadınız" autocomplete="username">
+        </div>
+        <div class="field">
+          <label class="field-label" for="teacher-password-input">Şifre</label>
           <input id="teacher-password-input" class="input-control" type="password" placeholder="Şifrenizi yazın" autocomplete="current-password">
         </div>
-        <div id="teacher-login-error" class="inline-msg is-error hidden" role="alert"></div>
-        <div class="inline-msg is-info">
-          <i data-lucide="info" aria-hidden="true"></i>
-          <span>Varsayılan demo şifresi: <strong>1234</strong></span>
+        <div class="field hidden" id="teacher-password2-field">
+          <label class="field-label" for="teacher-password2-input">Şifre (Tekrar)</label>
+          <input id="teacher-password2-input" class="input-control" type="password" placeholder="Şifrenizi tekrar yazın" autocomplete="new-password">
         </div>
+        <div id="teacher-login-error" class="inline-msg is-error hidden" role="alert"></div>
         <div class="flex-between">
           <button type="button" class="btn btn-soft" onclick="closeTeacherLoginModal()">Vazgeç</button>
           <button type="submit" class="btn btn-primary">
             <i data-lucide="lock-open" aria-hidden="true"></i>
-            Kontrol Masasını Aç
+            <span id="teacher-login-submit-label">Kontrol Masasını Aç</span>
           </button>
         </div>
       </form>
@@ -1016,7 +1020,7 @@
       const LS_KEY = `kitapGunlugu_state_v1`;
       const EMPTY = function() {
         return {
-          settings: { className: `1/D Sınıfı`, classBookGoal: 40, studentBookGoal: 6, daysLeft: 21, teacherPass: `1234` },
+          settings: { className: `1/D Sınıfı`, classBookGoal: 40, studentBookGoal: 6, daysLeft: 21, teacherPass: ``, teacherName: `` },
           students: [],
           entries: []
         };
@@ -1192,7 +1196,8 @@
           classBookGoal: 40,
           studentBookGoal: 6,
           daysLeft: 21,
-          teacherPass: `1234`
+          teacherPass: ``,
+          teacherName: ``
         },
         students: [
           { id: `stu_1`, schoolNo: `101`, name: `Elif Yılmaz`, pin: `1042` },
@@ -1426,7 +1431,8 @@
           classBookGoal: 40,
           studentBookGoal: 6,
           daysLeft: 21,
-          teacherPass: `1234`
+          teacherPass: ``,
+          teacherName: ``
         },
         students: [],
         entries: []
@@ -2480,7 +2486,7 @@
                 </div>
                 <div class="field">
                   <label class="field-label" for="set-teacher-pass">Yeni Öğretmen Şifresi</label>
-                  <input id="set-teacher-pass" class="input-control" type="text" required value="` + escapeHtml(s.teacherPass) + `">
+                  <input id="set-teacher-pass" class="input-control" type="password" autocomplete="new-password" placeholder="Değiştirmek için yazın">
                 </div>
               </div>
               <button type="submit" class="btn btn-primary">
@@ -2651,11 +2657,32 @@
       const modal = document.getElementById(`teacher-login-modal`);
       const input = document.getElementById(`teacher-password-input`);
       const err = document.getElementById(`teacher-login-error`);
+      const nameInput = document.getElementById(`teacher-name-input`);
+      const pass2Input = document.getElementById(`teacher-password2-input`);
+      const registering = !isTeacherRegistered();
+      const titleEl = document.getElementById(`teacher-login-title`);
+      const descEl = document.getElementById(`teacher-login-desc`);
+      const labelEl = document.getElementById(`teacher-login-submit-label`);
+      const pass2Field = document.getElementById(`teacher-password2-field`);
+      if (titleEl) titleEl.innerHTML = registering ? `Öğretmen <em>Kaydı</em>` : `Öğretmen <em>Girişi</em>`;
+      if (descEl) descEl.textContent = registering
+        ? `İlk kez kullanıyorsunuz. Adınızı ve size özel bir şifreyi belirleyin. Bu bilgilerle bir sonraki girişte kontrol masasına ulaşırsınız.`
+        : `Kitap kayıtlarını onaylamak, öğrenci QR/PIN kartları üretmek ve e-Okul raporlarını indirmek için giriş yapın.`;
+      if (labelEl) labelEl.textContent = registering ? `Kayıt Ol ve Gir` : `Kontrol Masasını Aç`;
+      if (pass2Field) pass2Field.classList.toggle(`hidden`, !registering);
+      if (input) input.setAttribute(`autocomplete`, registering ? `new-password` : `current-password`);
       if (err) err.classList.add(`hidden`);
+      if (nameInput) nameInput.value = ``;
       if (input) input.value = ``;
+      if (pass2Input) pass2Input.value = ``;
       if (modal) modal.classList.remove(`hidden`);
-      if (input) input.focus();
+      if (nameInput) nameInput.focus();
       refreshIcons();
+    }
+
+    function isTeacherRegistered() {
+      const st = appState.settings;
+      return !!(st.teacherName && st.teacherPass);
     }
 
     function closeTeacherLoginModal() {
@@ -2663,16 +2690,37 @@
       if (modal) modal.classList.add(`hidden`);
     }
 
-    function handleTeacherLogin(event) {
+    async function handleTeacherLogin(event) {
       event.preventDefault();
+      const nameEl = document.getElementById(`teacher-name-input`);
       const input = document.getElementById(`teacher-password-input`);
+      const pass2El = document.getElementById(`teacher-password2-input`);
       const err = document.getElementById(`teacher-login-error`);
+      const name = nameEl ? nameEl.value.trim() : ``;
       const pass = input ? input.value.trim() : ``;
-      if (pass !== appState.settings.teacherPass) {
-        if (err) {
-          err.textContent = `Şifre hatalı. Lütfen kontrol edip tekrar deneyin.`;
-          err.classList.remove(`hidden`);
-        }
+      const fail = function(msg) {
+        if (err) { err.textContent = msg; err.classList.remove(`hidden`); }
+      };
+
+      if (!isTeacherRegistered()) {
+        const pass2 = pass2El ? pass2El.value.trim() : ``;
+        if (name.length < 2) { fail(`Lütfen adınızı yazın.`); return; }
+        if (pass.length < 4) { fail(`Şifre en az 4 karakter olmalı.`); return; }
+        if (pass !== pass2) { fail(`Şifreler aynı değil. Lütfen tekrar yazın.`); return; }
+        appState.settings.teacherName = name;
+        appState.settings.teacherPass = pass;
+        await persistState();
+        uiState.teacherAuthenticated = true;
+        uiState.view = `teacher`;
+        closeTeacherLoginModal();
+        renderApp();
+        showToast(`Kaydınız oluşturuldu. Hoş geldiniz, ` + name + `!`);
+        return;
+      }
+
+      const sameName = name.toLocaleLowerCase(`tr`) === String(appState.settings.teacherName).trim().toLocaleLowerCase(`tr`);
+      if (!sameName || pass !== appState.settings.teacherPass) {
+        fail(`Ad veya şifre hatalı. Lütfen kontrol edip tekrar deneyin.`);
         return;
       }
       uiState.teacherAuthenticated = true;
@@ -3164,6 +3212,8 @@
         return;
       }
       uiState.armedResetMode = null;
+      const keepName = appState.settings.teacherName;
+      const keepPass = appState.settings.teacherPass;
       if (mode === `demo`) {
         appState = getDefaultSeedState();
         showToast(`1/D Sınıfı örnek verileri geri yüklendi.`);
@@ -3171,6 +3221,8 @@
         appState = getEmptyState();
         showToast(`Sınıf verileri sıfırlandı. Yeni öğrenciler ekleyebilirsiniz.`);
       }
+      appState.settings.teacherName = keepName;
+      appState.settings.teacherPass = keepPass;
       await persistState();
       renderApp();
     }
