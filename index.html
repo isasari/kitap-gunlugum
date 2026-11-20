@@ -1625,18 +1625,12 @@
           `</button>`
           : ``;
       } else if (uiState.view === `student`) {
-        const student = appState.students.find(function(s) { return s.id === uiState.activeStudentId; });
-        const stuLabel = student ? escapeHtml(student.name) : `Öğrenci`;
-        actions.innerHTML =
-          `<span class="badge"><i data-lucide="user" aria-hidden="true"></i> ` + stuLabel + `</span>` +
-          `<button type="button" class="btn btn-soft" onclick="goToView('home')">` +
-            `<i data-lucide="arrow-left" aria-hidden="true"></i>` +
-            `<span>Sınıf Panosuna Dön</span>` +
-          `</button>` +
-          (isAdminLink ? `<button type="button" class="btn btn-primary" onclick="openTeacherEntry()">` +
+        actions.innerHTML = isAdminLink
+          ? `<button type="button" class="btn btn-primary" onclick="openTeacherEntry()">` +
             `<i data-lucide="shield-check" aria-hidden="true"></i>` +
             `<span>Öğretmen Girişi</span>` +
-          `</button>` : ``);
+          `</button>`
+          : ``;
       } else if (uiState.view === `teacher`) {
         actions.innerHTML =
           `<span class="badge badge-grape"><i data-lucide="shield-check" aria-hidden="true"></i> Öğretmen Modu</span>`;
@@ -1867,11 +1861,6 @@
         `</button>`;
       }).join(``);
 
-      const genreOptionsHtml = GENRES.map(function(g) {
-        const sel = editingEntry && editingEntry.genre === g ? ` selected` : ``;
-        return `<option value="` + escapeHtml(g) + `"` + sel + `>` + escapeHtml(g) + `</option>`;
-      }).join(``);
-
       const badgesHtml = BADGES.map(function(b) {
         const unlocked = b.check(stats, goal);
         return `<div class="badge-card` + (unlocked ? `` : ` is-locked`) + `">` +
@@ -1933,41 +1922,7 @@
       }
 
       return `
-        <section class="hero-panel animate-in">
-          <div class="hero-copy">
-            <span class="kicker">` + escapeHtml(appState.settings.className) + ` · Okuma Karnem</span>
-            <h1 class="display">Merhaba <em>` + escapeHtml(student.name.split(` `)[0]) + `</em>!</h1>
-            <p class="muted-note">“Merhaba Minik Okur! Bugün günlüğüne hangi büyülü macerayı ekliyoruz?”</p>
-            <div class="hero-pills">
-              <span class="badge"><i data-lucide="key-round" aria-hidden="true"></i> Günlük Kodu: #` + escapeHtml(student.pin) + `</span>
-              <span class="badge badge-grape"><i data-lucide="hash" aria-hidden="true"></i> Okul No: ` + escapeHtml(student.schoolNo) + `</span>
-            </div>
-            <div style="width: 100%; max-width: 440px;" class="stack-sm">
-              <div class="flex-between">
-                <span class="kicker">Okuma Hedefi İlerlemesi</span>
-                <strong>` + stats.approvedCount + ` / ` + goal + ` Kitap (%` + goalPct + `)</strong>
-              </div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width: ` + goalPct + `%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="kpi-grid" style="grid-template-columns: 1fr; gap: var(--space-sm);">
-            <div class="kpi-card">
-              <span class="kicker">Onaylı Sayfa &amp; Kitap</span>
-              <span class="figure-value is-primary">` + stats.approvedPages + ` sayfa</span>
-              <span class="muted-note">` + stats.approvedCount + ` onaylı · ` + stats.pendingCount + ` onay bekliyor</span>
-            </div>
-            <div class="kpi-card">
-              <span class="kicker">Kazanılan Rozetler</span>
-              <span class="figure-value is-secondary">` + earnedBadges.length + ` / ` + BADGES.length + `</span>
-              <span class="muted-note">Yeni rozetler için farklı türler keşfet!</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="asymmetric-grid">
+        <section class="stack-md animate-in">
           <article class="card">
             <div class="stack-sm" style="gap: var(--space-2xs);">
               <span class="kicker">` + (editingEntry ? `Kaydı Düzenle` : `Yeni Sayfa`) + `</span>
@@ -1983,10 +1938,6 @@
               <div class="field">
                 <label class="field-label" for="stu-book-author">Yazar Adı</label>
                 <input id="stu-book-author" class="input-control" type="text" required placeholder="Örneğin: Feridun Oral" value="` + escapeHtml(editingEntry ? editingEntry.author : ``) + `">
-              </div>
-              <div class="field">
-                <label class="field-label" for="stu-book-genre">Kitap Türü</label>
-                <select id="stu-book-genre" class="select-control">` + genreOptionsHtml + `</select>
               </div>
               <div class="field">
                 <label class="field-label" for="stu-book-pages">Sayfa Sayısı</label>
@@ -2016,7 +1967,38 @@
               </div>
             </form>
           </article>
+        </section>
 
+        <section class="hero-panel animate-in">
+          <div class="hero-copy">
+            <span class="kicker">` + escapeHtml(appState.settings.className) + ` · Okuma Karnem</span>
+            <h1 class="display">Merhaba <em>` + escapeHtml(student.name.split(` `)[0]) + `</em>!</h1>
+            <div style="width: 100%; max-width: 440px;" class="stack-sm">
+              <div class="flex-between">
+                <span class="kicker">Okuma Hedefi İlerlemesi</span>
+                <strong>` + stats.approvedCount + ` / ` + goal + ` Kitap (%` + goalPct + `)</strong>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: ` + goalPct + `%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-grid" style="grid-template-columns: 1fr; gap: var(--space-sm);">
+            <div class="kpi-card">
+              <span class="kicker">Onaylı Sayfa &amp; Kitap</span>
+              <span class="figure-value is-primary">` + stats.approvedPages + ` sayfa</span>
+              <span class="muted-note">` + stats.approvedCount + ` onaylı · ` + stats.pendingCount + ` onay bekliyor</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kicker">Kazanılan Rozetler</span>
+              <span class="figure-value is-secondary">` + earnedBadges.length + ` / ` + BADGES.length + `</span>
+              <span class="muted-note">Yeni rozetler için farklı türler keşfet!</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="stack-md">
           <article class="card card-grape">
             <div class="flex-between">
               <div class="stack-sm" style="gap: var(--space-2xs);">
@@ -2567,14 +2549,16 @@
       event.preventDefault();
       const titleEl = document.getElementById(`stu-book-title`);
       const authorEl = document.getElementById(`stu-book-author`);
-      const genreEl = document.getElementById(`stu-book-genre`);
       const pagesEl = document.getElementById(`stu-book-pages`);
       const reflEl = document.getElementById(`stu-book-reflection`);
       const errEl = document.getElementById(`stu-form-error`);
 
       const title = titleEl ? titleEl.value.trim() : ``;
       const author = authorEl ? authorEl.value.trim() : ``;
-      const genre = genreEl ? genreEl.value : GENRES[0];
+      const editingEntry = uiState.editingEntryId
+        ? appState.entries.find(function(e) { return e.id === uiState.editingEntryId && e.studentId === uiState.activeStudentId; })
+        : null;
+      const genre = editingEntry ? editingEntry.genre : GENRES[0];
       const pages = pagesEl ? parseInt(pagesEl.value, 10) : 0;
       const reflection = reflEl ? reflEl.value.trim() : ``;
 
