@@ -951,7 +951,7 @@
       const LS_KEY = `kitapGunlugu_state_v1`;
       const EMPTY = function() {
         return {
-          settings: { className: `1/D Sınıfı`, classBookGoal: 40, studentBookGoal: 6, daysLeft: 21 },
+          settings: { className: `1/D Sınıfı`, classBookGoal: 40, studentBookGoal: 6, monthlyPageGoal: 250, daysLeft: 21 },
           students: [],
           entries: []
         };
@@ -1061,13 +1061,24 @@
   </script>
   <script>
     const GENRES = [
-      `Masal ve Hikâye`,
-      `Macera`,
-      `Hayvan Dostlar`,
-      `Bilim ve Keşif`,
-      `Değerler Eğitimi`,
-      `Şiir ve Tekerleme`
+      `Masal`,
+      `Hikâye`,
+      `Bilgilendirici (bilim, doğa, uzay vb.)`,
+      `Şiir / Tekerleme`,
+      `Hayvan hikâyeleri`,
+      `Resimli kitap`,
+      `Diğer`
     ];
+
+    const CORE_GENRES = GENRES.filter(function(genre) { return genre !== `Diğer`; });
+    const LEGACY_GENRE_MAP = {
+      [`Masal ve Hikâye`]: `Hikâye`,
+      [`Macera`]: `Hikâye`,
+      [`Hayvan Dostlar`]: `Hayvan hikâyeleri`,
+      [`Bilim ve Keşif`]: `Bilgilendirici (bilim, doğa, uzay vb.)`,
+      [`Değerler Eğitimi`]: `Hikâye`,
+      [`Şiir ve Tekerleme`]: `Şiir / Tekerleme`
+    };
 
     const STICKERS = [
       { id: `super-okur`, label: `⭐ Süper Okur` },
@@ -1117,6 +1128,110 @@
         icon: `award`,
         check: function(stats, goal) { return stats.approvedCount >= goal; },
         progressText: function(stats, goal) { return Math.min(stats.approvedCount, goal) + ` / ` + goal + ` kitap`; }
+      },
+      {
+        id: `kitap-yolcusu`,
+        title: `Kitap Yolcusu`,
+        desc: `5 onaylı kitabı bitir.`,
+        icon: `book-open`,
+        check: function(stats) { return stats.approvedCount >= 5; },
+        progressText: function(stats) { return Math.min(stats.approvedCount, 5) + ` / 5 kitap`; }
+      },
+      {
+        id: `sayfa-dagcisi`,
+        title: `Sayfa Dağcısı`,
+        desc: `250 onaylı sayfaya ulaş.`,
+        icon: `mountain`,
+        check: function(stats) { return stats.approvedPages >= 250; },
+        progressText: function(stats) { return Math.min(stats.approvedPages, 250) + ` / 250 sayfa`; }
+      },
+      {
+        id: `duzenli-okur`,
+        title: `Düzenli Okur`,
+        desc: `Üst üste 7 gün kayıt ekle.`,
+        icon: `calendar-check`,
+        check: function(stats) { return stats.consecutiveRecordDays >= 7; },
+        progressText: function(stats) { return Math.min(stats.consecutiveRecordDays, 7) + ` / 7 gün`; }
+      },
+      {
+        id: `kucuk-elestirmen`,
+        title: `Küçük Eleştirmen`,
+        desc: `3 onaylı kitaba yıldız verip düşünceni yaz.`,
+        icon: `message-circle`,
+        check: function(stats) { return stats.ratedAndReviewedCount >= 3; },
+        progressText: function(stats) { return Math.min(stats.ratedAndReviewedCount, 3) + ` / 3 kitap`; }
+      },
+      {
+        id: `uzun-yolcu`,
+        title: `Uzun Yolcu`,
+        desc: `40 sayfadan uzun bir kitabı bitir.`,
+        icon: `book-marked`,
+        check: function(stats) { return stats.hasLongApprovedBook; },
+        progressText: function(stats) { return stats.hasLongApprovedBook ? `Tamamlandı` : `41+ sayfalık kitap`; }
+      },
+      {
+        id: `kalem-ustasi`,
+        title: `Kalem Ustası`,
+        desc: `Düşünce yazını 100 karaktere ulaştır.`,
+        icon: `pen-line`,
+        check: function(stats) { return stats.hasLongReflection; },
+        progressText: function(stats) { return Math.min(stats.longestReflection, 100) + ` / 100 karakter`; }
+      },
+      {
+        id: `hizli-baslangic`,
+        title: `Hızlı Başlangıç`,
+        desc: `Bir haftada 2 kitap kaydı ekle.`,
+        icon: `zap`,
+        check: function(stats) { return stats.thisWeekRecordCount >= 2; },
+        progressText: function(stats) { return Math.min(stats.thisWeekRecordCount, 2) + ` / 2 kitap`; }
+      },
+      {
+        id: `hedef-avcisi`,
+        title: `Hedef Avcısı`,
+        desc: `Aylık onaylı sayfa hedefini tamamla.`,
+        icon: `target`,
+        check: function(stats) { return stats.monthlyApprovedPages >= stats.monthlyPageGoal; },
+        progressText: function(stats) { return Math.min(stats.monthlyApprovedPages, stats.monthlyPageGoal) + ` / ` + stats.monthlyPageGoal + ` sayfa`; }
+      },
+      {
+        id: `masal-avcisi`,
+        title: `Masal Avcısı`,
+        desc: `3 onaylı masal kitabı oku.`,
+        icon: `wand-sparkles`,
+        check: function(stats) { return stats.genreCounts[`Masal`] >= 3; },
+        progressText: function(stats) { return Math.min(stats.genreCounts[`Masal`], 3) + ` / 3 masal`; }
+      },
+      {
+        id: `bilim-meraklisi`,
+        title: `Bilim Meraklısı`,
+        desc: `2 onaylı bilgilendirici kitap oku.`,
+        icon: `telescope`,
+        check: function(stats) { return stats.genreCounts[`Bilgilendirici (bilim, doğa, uzay vb.)`] >= 2; },
+        progressText: function(stats) { return Math.min(stats.genreCounts[`Bilgilendirici (bilim, doğa, uzay vb.)`], 2) + ` / 2 kitap`; }
+      },
+      {
+        id: `hayvan-dostu`,
+        title: `Hayvan Dostu`,
+        desc: `2 onaylı hayvan hikâyesi oku.`,
+        icon: `paw-print`,
+        check: function(stats) { return stats.genreCounts[`Hayvan hikâyeleri`] >= 2; },
+        progressText: function(stats) { return Math.min(stats.genreCounts[`Hayvan hikâyeleri`], 2) + ` / 2 kitap`; }
+      },
+      {
+        id: `siir-dinleyicisi`,
+        title: `Şiir Dinleyicisi`,
+        desc: `1 onaylı şiir veya tekerleme kitabı oku.`,
+        icon: `music-2`,
+        check: function(stats) { return stats.genreCounts[`Şiir / Tekerleme`] >= 1; },
+        progressText: function(stats) { return Math.min(stats.genreCounts[`Şiir / Tekerleme`], 1) + ` / 1 kitap`; }
+      },
+      {
+        id: `her-renkten-okur`,
+        title: `Her Renkten Okur`,
+        desc: `Diğer türler dışında 5 farklı türde kitap oku.`,
+        icon: `rainbow`,
+        check: function(stats) { return stats.coreUniqueGenres >= 5; },
+        progressText: function(stats) { return Math.min(stats.coreUniqueGenres, 5) + ` / 5 tür`; }
       }
     ];
 
@@ -1126,6 +1241,7 @@
           className: `1/D Sınıfı`,
           classBookGoal: 40,
           studentBookGoal: 6,
+          monthlyPageGoal: 250,
           daysLeft: 21
         },
         students: [
@@ -1359,6 +1475,7 @@
           className: `1/D Sınıfı`,
           classBookGoal: 40,
           studentBookGoal: 6,
+          monthlyPageGoal: 250,
           daysLeft: 21
         },
         students: [],
@@ -1443,8 +1560,43 @@
       const pending = entries.filter(function(e) { return e.status === `pending`; });
       const rejected = entries.filter(function(e) { return e.status === `rejected`; });
       const approvedPages = approved.reduce(function(sum, e) { return sum + (Number(e.pages) || 0); }, 0);
-      const genreSet = new Set(approved.map(function(e) { return e.genre; }));
+      const genreSet = new Set(approved.map(function(e) { return e.genre; }).filter(function(genre) { return GENRES.indexOf(genre) !== -1; }));
       const commentedApprovedCount = approved.filter(function(e) { return (e.reflection || ``).trim().length >= 15; }).length;
+      const genreCounts = {};
+      GENRES.forEach(function(genre) { genreCounts[genre] = 0; });
+      approved.forEach(function(entry) {
+        if (Object.prototype.hasOwnProperty.call(genreCounts, entry.genre)) genreCounts[entry.genre] += 1;
+      });
+      const todayKey = getLocalDateKey(new Date());
+      const todayDate = dateKeyToUtcDate(todayKey);
+      const recordDates = new Set(entries.map(function(entry) { return getEntryDateKey(entry); }).filter(Boolean));
+      const todayOrYesterday = new Date(todayDate.getTime());
+      if (!recordDates.has(todayKey)) todayOrYesterday.setUTCDate(todayOrYesterday.getUTCDate() - 1);
+      let consecutiveRecordDays = 0;
+      while (recordDates.has(formatUtcDateKey(todayOrYesterday))) {
+        consecutiveRecordDays += 1;
+        todayOrYesterday.setUTCDate(todayOrYesterday.getUTCDate() - 1);
+      }
+      const mondayOffset = (todayDate.getUTCDay() + 6) % 7;
+      const weekStart = new Date(todayDate.getTime());
+      weekStart.setUTCDate(weekStart.getUTCDate() - mondayOffset);
+      const weekStartKey = formatUtcDateKey(weekStart);
+      const thisWeekRecordCount = entries.filter(function(entry) {
+        const dateKey = getEntryDateKey(entry);
+        return dateKey && dateKey >= weekStartKey && dateKey <= todayKey;
+      }).length;
+      const currentMonth = todayKey.slice(0, 7);
+      const monthlyApprovedPages = approved.filter(function(entry) {
+        return getEntryDateKey(entry).slice(0, 7) === currentMonth;
+      }).reduce(function(sum, entry) { return sum + (Number(entry.pages) || 0); }, 0);
+      const monthlyPageGoal = Math.max(1, Number(appState.settings.monthlyPageGoal) || 250);
+      const ratedAndReviewedCount = approved.filter(function(entry) {
+        return Number(entry.rating) >= 1 && Number(entry.rating) <= 5 && (entry.reflection || ``).trim().length > 0;
+      }).length;
+      const hasLongApprovedBook = approved.some(function(entry) { return Number(entry.pages) > 40; });
+      const longestReflection = approved.reduce(function(longest, entry) {
+        return Math.max(longest, (entry.reflection || ``).trim().length);
+      }, 0);
       return {
         total: entries.length,
         approvedCount: approved.length,
@@ -1452,9 +1604,46 @@
         rejectedCount: rejected.length,
         approvedPages: approvedPages,
         uniqueGenres: genreSet.size,
+        coreUniqueGenres: CORE_GENRES.filter(function(genre) { return genreSet.has(genre); }).length,
+        genreCounts: genreCounts,
         commentedApprovedCount: commentedApprovedCount,
+        consecutiveRecordDays: consecutiveRecordDays,
+        ratedAndReviewedCount: ratedAndReviewedCount,
+        hasLongApprovedBook: hasLongApprovedBook,
+        longestReflection: longestReflection,
+        hasLongReflection: longestReflection >= 100,
+        thisWeekRecordCount: thisWeekRecordCount,
+        monthlyApprovedPages: monthlyApprovedPages,
+        monthlyPageGoal: monthlyPageGoal,
         approvedEntries: approved
       };
+    }
+
+    function getLocalDateKey(date) {
+      return date.getFullYear() + `-` + String(date.getMonth() + 1).padStart(2, `0`) + `-` + String(date.getDate()).padStart(2, `0`);
+    }
+
+    function dateKeyToUtcDate(dateKey) {
+      const parts = String(dateKey || ``).slice(0, 10).split(`-`).map(Number);
+      return new Date(Date.UTC(parts[0] || 1970, (parts[1] || 1) - 1, parts[2] || 1));
+    }
+
+    function formatUtcDateKey(date) {
+      return date.getUTCFullYear() + `-` + String(date.getUTCMonth() + 1).padStart(2, `0`) + `-` + String(date.getUTCDate()).padStart(2, `0`);
+    }
+
+    function getEntryDateKey(entry) {
+      const dateKey = String(entry.createdAt || ``).slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(dateKey) ? dateKey : ``;
+    }
+
+    function normalizeAppState(state) {
+      state.settings = state.settings || {};
+      state.settings.monthlyPageGoal = Math.max(1, Number(state.settings.monthlyPageGoal) || 250);
+      state.entries.forEach(function(entry) {
+        entry.genre = LEGACY_GENRE_MAP[entry.genre] || (GENRES.indexOf(entry.genre) !== -1 ? entry.genre : `Diğer`);
+      });
+      return state;
     }
 
     function getStudentEarnedBadges(studentId) {
@@ -1944,6 +2133,14 @@
                 <input id="stu-book-author" class="input-control" type="text" required placeholder="Örneğin: Feridun Oral" value="` + escapeHtml(editingEntry ? editingEntry.author : ``) + `">
               </div>
               <div class="field">
+                <label class="field-label" for="stu-book-genre">Kitap Türü</label>
+                <select id="stu-book-genre" class="select-control" required>
+                  ` + GENRES.map(function(genre) {
+                    return `<option value="` + escapeHtml(genre) + `"` + ((editingEntry ? editingEntry.genre : GENRES[0]) === genre ? ` selected` : ``) + `>` + escapeHtml(genre) + `</option>`;
+                  }).join(``) + `
+                </select>
+              </div>
+              <div class="field">
                 <label class="field-label" for="stu-book-pages">Sayfa Sayısı</label>
                 <input id="stu-book-pages" class="input-control" type="number" min="4" max="999" required placeholder="32" value="` + (editingEntry ? editingEntry.pages : ``) + `">
               </div>
@@ -2382,6 +2579,10 @@
               </div>
               <div class="form-grid">
                 <div class="field">
+                  <label class="field-label" for="set-monthly-page-goal">Aylık Sayfa Hedefi</label>
+                  <input id="set-monthly-page-goal" class="input-control" type="number" min="1" max="10000" required value="` + (Number(s.monthlyPageGoal) || 250) + `">
+                </div>
+                <div class="field">
                   <label class="field-label" for="set-days-left">Kalan Gün</label>
                   <input id="set-days-left" class="input-control" type="number" min="0" max="365" required value="` + s.daysLeft + `">
                 </div>
@@ -2551,6 +2752,7 @@
       event.preventDefault();
       const titleEl = document.getElementById(`stu-book-title`);
       const authorEl = document.getElementById(`stu-book-author`);
+      const genreEl = document.getElementById(`stu-book-genre`);
       const pagesEl = document.getElementById(`stu-book-pages`);
       const reflEl = document.getElementById(`stu-book-reflection`);
       const errEl = document.getElementById(`stu-form-error`);
@@ -2560,7 +2762,7 @@
       const editingEntry = uiState.editingEntryId
         ? appState.entries.find(function(e) { return e.id === uiState.editingEntryId && e.studentId === uiState.activeStudentId; })
         : null;
-      const genre = editingEntry ? editingEntry.genre : GENRES[0];
+      const genre = genreEl ? genreEl.value : GENRES[0];
       const pages = pagesEl ? parseInt(pagesEl.value, 10) : 0;
       const reflection = reflEl ? reflEl.value.trim() : ``;
 
@@ -2585,8 +2787,15 @@
         }
         return;
       }
+      if (GENRES.indexOf(genre) === -1) {
+        if (errEl) {
+          errEl.textContent = `Lütfen listeden bir kitap türü seç.`;
+          errEl.classList.remove(`hidden`);
+        }
+        return;
+      }
 
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getLocalDateKey(new Date());
 
       if (uiState.editingEntryId) {
         const idx = appState.entries.findIndex(function(e) { return e.id === uiState.editingEntryId; });
@@ -2955,10 +3164,12 @@
       const clsEl = document.getElementById(`set-class-name`);
       const clsGoalEl = document.getElementById(`set-class-goal`);
       const stuGoalEl = document.getElementById(`set-stu-goal`);
+      const monthlyPageGoalEl = document.getElementById(`set-monthly-page-goal`);
       const daysEl = document.getElementById(`set-days-left`);
       if (clsEl && clsEl.value.trim()) appState.settings.className = clsEl.value.trim();
       if (clsGoalEl) appState.settings.classBookGoal = Math.max(1, parseInt(clsGoalEl.value, 10) || 40);
       if (stuGoalEl) appState.settings.studentBookGoal = Math.max(1, parseInt(stuGoalEl.value, 10) || 6);
+      if (monthlyPageGoalEl) appState.settings.monthlyPageGoal = Math.max(1, parseInt(monthlyPageGoalEl.value, 10) || 250);
       if (daysEl) appState.settings.daysLeft = Math.max(0, parseInt(daysEl.value, 10) || 0);
 
       await persistState();
@@ -2992,13 +3203,14 @@
     async function initApp() {
       uiState.teacherAuthenticated = true;
       uiState.view = `teacher`;
+      appState = normalizeAppState(appState);
 
       try {
         const cached = localStorage.getItem(`kitapGunlugu_state_v1`);
         if (cached) {
           const saved = JSON.parse(cached);
           if (saved && saved.settings && Array.isArray(saved.students) && Array.isArray(saved.entries)) {
-            appState = saved;
+            appState = normalizeAppState(saved);
           }
         }
       } catch (err) {}
@@ -3028,7 +3240,7 @@
         try {
           const saved = await window.notebookAppApi.getAppState();
           if (saved && saved.settings && Array.isArray(saved.students) && Array.isArray(saved.entries)) {
-            appState = saved;
+            appState = normalizeAppState(saved);
           }
         } catch (err) {
           // Keep default seed state on error
