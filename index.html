@@ -1923,6 +1923,10 @@
 
       return `
         <section class="stack-md animate-in">
+          <div class="hero-copy">
+            <span class="kicker">` + escapeHtml(appState.settings.className) + ` · Okuma Karnem</span>
+            <h1 class="display">Merhaba <em>` + escapeHtml(student.name.split(` `)[0]) + `</em>!</h1>
+          </div>
           <article class="card">
             <div class="stack-sm" style="gap: var(--space-2xs);">
               <span class="kicker">` + (editingEntry ? `Kaydı Düzenle` : `Yeni Sayfa`) + `</span>
@@ -1971,8 +1975,6 @@
 
         <section class="hero-panel animate-in">
           <div class="hero-copy">
-            <span class="kicker">` + escapeHtml(appState.settings.className) + ` · Okuma Karnem</span>
-            <h1 class="display">Merhaba <em>` + escapeHtml(student.name.split(` `)[0]) + `</em>!</h1>
             <div style="width: 100%; max-width: 440px;" class="stack-sm">
               <div class="flex-between">
                 <span class="kicker">Okuma Hedefi İlerlemesi</span>
