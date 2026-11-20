@@ -3236,6 +3236,8 @@
     async function initApp() {
       uiState.teacherAuthenticated = true;
       appState = normalizeAppState(appState);
+      const root = document.getElementById(`app-root`);
+      if (root) root.innerHTML = `<div class="empty-state" role="status">Okuma panosu yükleniyor...</div>`;
 
       try {
         const cached = localStorage.getItem(`kitapGunlugu_state_v1`);
@@ -3250,23 +3252,6 @@
       const params = new URLSearchParams(window.location.search);
       const pinParam = params.get(`pin`);
       const idParam = params.get(`id`);
-      if (pinParam) {
-        const match = appState.students.find(function(s) {
-          return s.pin === pinParam.trim().replace(/^#/, ``);
-        });
-        if (match) {
-          uiState.view = `student`;
-          uiState.activeStudentId = match.id;
-        }
-      } else if (idParam) {
-        const match = appState.students.find(function(s) { return s.id === idParam; });
-        if (match) {
-          uiState.view = `student`;
-          uiState.activeStudentId = match.id;
-        }
-      }
-
-      renderApp();
 
       if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
         try {
@@ -3279,6 +3264,8 @@
         }
       }
 
+      uiState.view = `home`;
+      uiState.activeStudentId = null;
       if (pinParam || idParam) {
         const match = pinParam
           ? appState.students.find(function(s) { return s.pin === pinParam.trim().replace(/^#/, ``); })
