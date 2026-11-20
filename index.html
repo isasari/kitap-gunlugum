@@ -921,71 +921,6 @@
     <section id="print-cards-sheet" class="print-only-cards hidden" aria-hidden="true"></section>
   </div>
 
-  <!-- Student PIN Entry Modal -->
-  <div id="pin-modal" class="modal-backdrop hidden no-print" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
-    <div class="modal-panel animate-in">
-      <div class="modal-header">
-        <div class="stack-sm">
-          <span class="kicker">Özel Öğrenci Erişimi</span>
-          <h2 class="section-title" id="pin-modal-title">Günlük Kodunla <em>Giriş</em> Yap</h2>
-        </div>
-        <button type="button" class="btn btn-soft btn-sm" onclick="closePinModal()" aria-label="Pencereyi kapat">
-          <i data-lucide="x" aria-hidden="true"></i>
-        </button>
-      </div>
-      <p class="muted-note">Öğretmeninin sana verdiği 4 haneli PIN kodunu yazarak kişisel kitaplığına ve rozetlerine ulaşabilirsin.</p>
-      <form onsubmit="handlePinSubmit(event)" class="stack-md">
-        <div class="field">
-          <label class="field-label" for="pin-login-input">4 Haneli Günlük PIN Kodu</label>
-          <input id="pin-login-input" class="input-control" type="text" inputmode="numeric" maxlength="6" placeholder="Örnek: 1042" autocomplete="off">
-        </div>
-        <div id="pin-login-error" class="inline-msg is-error hidden" role="alert"></div>
-        <div class="flex-between">
-          <button type="button" class="btn btn-soft" onclick="closePinModal()">Vazgeç</button>
-          <button type="submit" class="btn btn-primary">
-            <i data-lucide="book-open" aria-hidden="true"></i>
-            Günlüğüme Git
-          </button>
-        </div>
-      </form>
-      <div id="pin-demo-chips" class="stack-sm"></div>
-    </div>
-  </div>
-
-  <!-- Teacher Login Modal -->
-  <div id="teacher-login-modal" class="modal-backdrop hidden no-print" role="dialog" aria-modal="true" aria-labelledby="teacher-login-title">
-    <div class="modal-panel animate-in">
-      <div class="modal-header">
-        <div class="stack-sm">
-          <span class="kicker">Sınıf Yönetimi</span>
-          <h2 class="section-title" id="teacher-login-title">Öğretmen <em>Girişi</em></h2>
-        </div>
-        <button type="button" class="btn btn-soft btn-sm" onclick="closeTeacherLoginModal()" aria-label="Pencereyi kapat">
-          <i data-lucide="x" aria-hidden="true"></i>
-        </button>
-      </div>
-      <p class="muted-note">Kitap kayıtlarını onaylamak, öğrenci QR/PIN kartları üretmek ve e-Okul raporlarını indirmek için şifrenizi girin.</p>
-      <form onsubmit="handleTeacherLogin(event)" class="stack-md">
-        <div class="field">
-          <label class="field-label" for="teacher-password-input">Öğretmen Şifresi</label>
-          <input id="teacher-password-input" class="input-control" type="password" placeholder="Şifrenizi yazın" autocomplete="current-password">
-        </div>
-        <div id="teacher-login-error" class="inline-msg is-error hidden" role="alert"></div>
-        <div class="inline-msg is-info">
-          <i data-lucide="info" aria-hidden="true"></i>
-          <span>Varsayılan demo şifresi: <strong>1234</strong></span>
-        </div>
-        <div class="flex-between">
-          <button type="button" class="btn btn-soft" onclick="closeTeacherLoginModal()">Vazgeç</button>
-          <button type="submit" class="btn btn-primary">
-            <i data-lucide="lock-open" aria-hidden="true"></i>
-            Kontrol Masasını Aç
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Student QR/PIN Card Modal -->
   <div id="qr-card-modal" class="modal-backdrop hidden no-print" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
     <div class="modal-panel animate-in">
@@ -1010,13 +945,13 @@
   <script>
     // Apps Script "Web uygulaması" adresini tırnakların arasına yapıştırın.
     // Boş bırakılırsa uygulama eskisi gibi yalnızca bu cihazın tarayıcısında saklar.
-    const APPS_SCRIPT_URL = ``;
+    const APPS_SCRIPT_URL = `https://script.google.com/macros/s/AKfycbxJDerrcnsDsAa1yAcbnXk1jVYWWfUJpJyRKmt00BAFWHg0zoKI7AEGk9Nouu7Irr--1A/exec`;
 
     window.notebookAppApi = (function() {
       const LS_KEY = `kitapGunlugu_state_v1`;
       const EMPTY = function() {
         return {
-          settings: { className: `1/D Sınıfı`, classBookGoal: 40, studentBookGoal: 6, daysLeft: 21, teacherPass: `1234` },
+          settings: { className: `1/D Sınıfı`, classBookGoal: 40, studentBookGoal: 6, daysLeft: 21 },
           students: [],
           entries: []
         };
@@ -1191,8 +1126,7 @@
           className: `1/D Sınıfı`,
           classBookGoal: 40,
           studentBookGoal: 6,
-          daysLeft: 21,
-          teacherPass: `1234`
+          daysLeft: 21
         },
         students: [
           { id: `stu_1`, schoolNo: `101`, name: `Elif Yılmaz`, pin: `1042` },
@@ -1425,8 +1359,7 @@
           className: `1/D Sınıfı`,
           classBookGoal: 40,
           studentBookGoal: 6,
-          daysLeft: 21,
-          teacherPass: `1234`
+          daysLeft: 21
         },
         students: [],
         entries: []
@@ -1440,7 +1373,7 @@
       studentFilter: `all`, // 'all' | 'approved' | 'pending' | 'rejected'
       selectedRating: 5,
       editingEntryId: null,
-      teacherAuthenticated: false,
+      teacherAuthenticated: true,
       teacherTab: `approvals`, // 'approvals' | 'students' | 'reports' | 'settings'
       approvalFilter: `pending`, // 'pending' | 'approved' | 'rejected' | 'all'
       rejectingEntryId: null,
@@ -1682,17 +1615,15 @@
       }
       const actions = document.getElementById(`topbar-actions`);
       if (!actions) return;
+      const isAdminLink = new URLSearchParams(window.location.search).get(`admin`) === `1`;
 
       if (uiState.view === `home`) {
-        actions.innerHTML =
-          `<button type="button" class="btn btn-soft" onclick="openPinModal()">` +
-            `<i data-lucide="qr-code" aria-hidden="true"></i>` +
-            `<span>Öğrenci PIN Girişi</span>` +
-          `</button>` +
-          `<button type="button" class="btn btn-primary" onclick="openTeacherEntry()">` +
+        actions.innerHTML = isAdminLink
+          ? `<button type="button" class="btn btn-primary" onclick="openTeacherEntry()">` +
             `<i data-lucide="shield-check" aria-hidden="true"></i>` +
             `<span>Öğretmen Girişi</span>` +
-          `</button>`;
+          `</button>`
+          : ``;
       } else if (uiState.view === `student`) {
         const student = appState.students.find(function(s) { return s.id === uiState.activeStudentId; });
         const stuLabel = student ? escapeHtml(student.name) : `Öğrenci`;
@@ -1702,21 +1633,13 @@
             `<i data-lucide="arrow-left" aria-hidden="true"></i>` +
             `<span>Sınıf Panosuna Dön</span>` +
           `</button>` +
-          `<button type="button" class="btn btn-primary" onclick="openTeacherEntry()">` +
+          (isAdminLink ? `<button type="button" class="btn btn-primary" onclick="openTeacherEntry()">` +
             `<i data-lucide="shield-check" aria-hidden="true"></i>` +
             `<span>Öğretmen Girişi</span>` +
-          `</button>`;
+          `</button>` : ``);
       } else if (uiState.view === `teacher`) {
         actions.innerHTML =
-          `<span class="badge badge-grape"><i data-lucide="shield-check" aria-hidden="true"></i> Öğretmen Modu</span>` +
-          `<button type="button" class="btn btn-soft" onclick="goToView('home')">` +
-            `<i data-lucide="home" aria-hidden="true"></i>` +
-            `<span>Sınıf Özeti</span>` +
-          `</button>` +
-          `<button type="button" class="btn btn-quiet" onclick="logoutTeacher()">` +
-            `<i data-lucide="log-out" aria-hidden="true"></i>` +
-            `<span>Çıkış</span>` +
-          `</button>`;
+          `<span class="badge badge-grape"><i data-lucide="shield-check" aria-hidden="true"></i> Öğretmen Modu</span>`;
       }
     }
 
@@ -1731,7 +1654,7 @@
           `<div class="empty-state">` +
             `<i data-lucide="book-open" aria-hidden="true"></i>` +
             `<h3 class="subhead">Henüz onaylanmış kitap yok</h3>` +
-            `<p class="muted-note">Öğrenciler kendi özel PIN bağlantılarından kitap ekledikçe ve öğretmen onayladıkça en çok okunan kitaplar burada sıralanacak.</p>` +
+            `<p class="muted-note">Öğrenciler kişisel bağlantılarından kitap bilgisi gönderdiğinde ve kitaplar onaylandığında en çok okunan kitaplar burada sıralanacak.</p>` +
           `</div>`;
       } else {
         topBooksHtml = `<div class="rank-list">` + stats.topBooks.slice(0, 6).map(function(book, idx) {
@@ -1807,7 +1730,7 @@
           <div class="hero-copy">
             <span class="kicker">Sınıf Okuma Yolculuğu Panosu</span>
             <h1 class="display">` + clsName + ` <em>Okuma</em> Serüveni</h1>
-            <p class="muted-note">Öğrencilerimizin okuduğu kitapları takip ediyor, sınıf hedefimize adım adım yaklaşıyoruz. Öğrenciler kendilerine özel PIN bağlantılarıyla günlüklerine kitap ekleyebilir.</p>
+            <p class="muted-note">Okuduğumuz kitapları takip ediyor, sınıf hedefimize adım adım yaklaşıyoruz. Öğrenciler kendilerine verilen kişisel bağlantılarla kitap bilgilerini gönderebilir.</p>
             <div class="hero-pills">
               <span class="badge"><i data-lucide="target" aria-hidden="true"></i> Hedef: ` + stats.goal + ` Kitap</span>
               <span class="badge badge-grape"><i data-lucide="calendar" aria-hidden="true"></i> ` + escapeHtml(appState.settings.daysLeft) + ` gün kaldı</span>
@@ -1906,7 +1829,7 @@
       if (!student) {
         return `<div class="empty-state">` +
           `<h2 class="section-title">Öğrenci bulunamadı</h2>` +
-          `<p class="muted-note">Girdiğin PIN kodu veya bağlantı geçersiz görünüyor. Öğretmeninden güncel PIN kodunu isteyebilirsin.</p>` +
+          `<p class="muted-note">Bu öğrenci bağlantısı geçersiz görünüyor. Kontrol panelinden güncel bağlantıyı paylaşabilirsin.</p>` +
           `<button type="button" class="btn btn-primary" onclick="goToView('home')">Sınıf Panosuna Dön</button>` +
         `</div>`;
       }
@@ -2478,10 +2401,6 @@
                   <label class="field-label" for="set-days-left">Kalan Gün</label>
                   <input id="set-days-left" class="input-control" type="number" min="0" max="365" required value="` + s.daysLeft + `">
                 </div>
-                <div class="field">
-                  <label class="field-label" for="set-teacher-pass">Yeni Öğretmen Şifresi</label>
-                  <input id="set-teacher-pass" class="input-control" type="text" required value="` + escapeHtml(s.teacherPass) + `">
-                </div>
               </div>
               <button type="submit" class="btn btn-primary">
                 <i data-lucide="save" aria-hidden="true"></i> Ayarları Kaydet
@@ -2582,111 +2501,18 @@
       renderApp();
     }
 
-    function openPinModal() {
-      const modal = document.getElementById(`pin-modal`);
-      const input = document.getElementById(`pin-login-input`);
-      const err = document.getElementById(`pin-login-error`);
-      const chips = document.getElementById(`pin-demo-chips`);
-      if (err) err.classList.add(`hidden`);
-      if (input) input.value = ``;
-      if (chips) {
-        if (appState.students.length > 0) {
-          chips.innerHTML = `<span class="kicker">Hızlı Öğrenci Bağlantısı Önizle</span>` +
-            `<div class="flex-row">` +
-            appState.students.slice(0, 4).map(function(s) {
-              return `<button type="button" class="btn btn-soft btn-sm" onclick="loginStudentByPin('` + s.pin + `')">` +
-                escapeHtml(s.name.split(` `)[0]) + ` (#` + escapeHtml(s.pin) + `)` +
-              `</button>`;
-            }).join(``) +
-            `</div>`;
-        } else {
-          chips.innerHTML = `<p class="muted-note">Henüz kayıtlı öğrenci yok. Öğretmen girişi yaparak öğrenci ekleyebilirsiniz.</p>`;
-        }
-      }
-      if (modal) modal.classList.remove(`hidden`);
-      if (input) input.focus();
-      refreshIcons();
-    }
-
-    function closePinModal() {
-      const modal = document.getElementById(`pin-modal`);
-      if (modal) modal.classList.add(`hidden`);
-    }
-
-    function handlePinSubmit(event) {
-      event.preventDefault();
-      const input = document.getElementById(`pin-login-input`);
-      const pinVal = input ? input.value.trim().replace(/^#/, ``) : ``;
-      loginStudentByPin(pinVal);
-    }
-
-    function loginStudentByPin(pinVal) {
-      const err = document.getElementById(`pin-login-error`);
-      const found = appState.students.find(function(s) { return s.pin === pinVal; });
-      if (!found) {
-        if (err) {
-          err.textContent = `Bu PIN koduna ait bir öğrenci bulunamadı. Kodu kontrol edip tekrar dene.`;
-          err.classList.remove(`hidden`);
-        }
-        return;
-      }
-      closePinModal();
-      uiState.activeStudentId = found.id;
-      uiState.view = `student`;
-      uiState.studentFilter = `all`;
-      uiState.editingEntryId = null;
-      uiState.selectedRating = 5;
-      try {
-        window.history.replaceState({}, ``, `?pin=` + encodeURIComponent(found.pin));
-      } catch (e) {}
-      renderApp();
-    }
 
     function openTeacherEntry() {
-      if (uiState.teacherAuthenticated) {
-        uiState.view = `teacher`;
-        renderApp();
-        return;
-      }
-      const modal = document.getElementById(`teacher-login-modal`);
-      const input = document.getElementById(`teacher-password-input`);
-      const err = document.getElementById(`teacher-login-error`);
-      if (err) err.classList.add(`hidden`);
-      if (input) input.value = ``;
-      if (modal) modal.classList.remove(`hidden`);
-      if (input) input.focus();
-      refreshIcons();
-    }
-
-    function closeTeacherLoginModal() {
-      const modal = document.getElementById(`teacher-login-modal`);
-      if (modal) modal.classList.add(`hidden`);
-    }
-
-    function handleTeacherLogin(event) {
-      event.preventDefault();
-      const input = document.getElementById(`teacher-password-input`);
-      const err = document.getElementById(`teacher-login-error`);
-      const pass = input ? input.value.trim() : ``;
-      if (pass !== appState.settings.teacherPass) {
-        if (err) {
-          err.textContent = `Şifre hatalı. Lütfen kontrol edip tekrar deneyin.`;
-          err.classList.remove(`hidden`);
-        }
-        return;
-      }
       uiState.teacherAuthenticated = true;
       uiState.view = `teacher`;
-      closeTeacherLoginModal();
       renderApp();
-      showToast(`Öğretmen Kontrol Masası açıldı.`);
     }
 
     function logoutTeacher() {
-      uiState.teacherAuthenticated = false;
-      uiState.view = `home`;
+      uiState.teacherAuthenticated = true;
+      uiState.view = `teacher`;
       renderApp();
-      showToast(`Öğretmen oturumu kapatıldı.`);
+      showToast(`Kontrol Paneli açık kaldı.`);
     }
 
     // Student View Handlers
@@ -3144,13 +2970,10 @@
       const clsGoalEl = document.getElementById(`set-class-goal`);
       const stuGoalEl = document.getElementById(`set-stu-goal`);
       const daysEl = document.getElementById(`set-days-left`);
-      const passEl = document.getElementById(`set-teacher-pass`);
-
       if (clsEl && clsEl.value.trim()) appState.settings.className = clsEl.value.trim();
       if (clsGoalEl) appState.settings.classBookGoal = Math.max(1, parseInt(clsGoalEl.value, 10) || 40);
       if (stuGoalEl) appState.settings.studentBookGoal = Math.max(1, parseInt(stuGoalEl.value, 10) || 6);
       if (daysEl) appState.settings.daysLeft = Math.max(0, parseInt(daysEl.value, 10) || 0);
-      if (passEl && passEl.value.trim()) appState.settings.teacherPass = passEl.value.trim();
 
       await persistState();
       renderApp();
@@ -3177,6 +3000,40 @@
 
     // App startup with state hydration + URL param routing
     async function initApp() {
+      uiState.teacherAuthenticated = true;
+      uiState.view = `teacher`;
+
+      try {
+        const cached = localStorage.getItem(`kitapGunlugu_state_v1`);
+        if (cached) {
+          const saved = JSON.parse(cached);
+          if (saved && saved.settings && Array.isArray(saved.students) && Array.isArray(saved.entries)) {
+            appState = saved;
+          }
+        }
+      } catch (err) {}
+
+      const params = new URLSearchParams(window.location.search);
+      const pinParam = params.get(`pin`);
+      const idParam = params.get(`id`);
+      if (pinParam) {
+        const match = appState.students.find(function(s) {
+          return s.pin === pinParam.trim().replace(/^#/, ``);
+        });
+        if (match) {
+          uiState.view = `student`;
+          uiState.activeStudentId = match.id;
+        }
+      } else if (idParam) {
+        const match = appState.students.find(function(s) { return s.id === idParam; });
+        if (match) {
+          uiState.view = `student`;
+          uiState.activeStudentId = match.id;
+        }
+      }
+
+      renderApp();
+
       if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
         try {
           const saved = await window.notebookAppApi.getAppState();
@@ -3188,22 +3045,13 @@
         }
       }
 
-      const params = new URLSearchParams(window.location.search);
-      const pinParam = params.get(`pin`);
-      const idParam = params.get(`id`);
-
-      if (pinParam) {
-        const cleanPin = pinParam.trim().replace(/^#/, ``);
-        const match = appState.students.find(function(s) { return s.pin === cleanPin; });
+      if (pinParam || idParam) {
+        const match = pinParam
+          ? appState.students.find(function(s) { return s.pin === pinParam.trim().replace(/^#/, ``); })
+          : appState.students.find(function(s) { return s.id === idParam; });
         if (match) {
           uiState.view = `student`;
           uiState.activeStudentId = match.id;
-        }
-      } else if (idParam) {
-        const matchById = appState.students.find(function(s) { return s.id === idParam; });
-        if (matchById) {
-          uiState.view = `student`;
-          uiState.activeStudentId = matchById.id;
         }
       }
 
@@ -3216,8 +3064,6 @@
 
     document.addEventListener(`keydown`, function(ev) {
       if (ev.key === `Escape`) {
-        closePinModal();
-        closeTeacherLoginModal();
         closeQrModal();
       }
     });
