@@ -2987,6 +2987,8 @@
         return;
       }
       uiState.armedResetMode = null;
+      const keepName = appState.settings.teacherName;
+      const keepPass = appState.settings.teacherPass;
       if (mode === `demo`) {
         appState = getDefaultSeedState();
         showToast(`1/D Sınıfı örnek verileri geri yüklendi.`);
@@ -2994,6 +2996,8 @@
         appState = getEmptyState();
         showToast(`Sınıf verileri sıfırlandı. Yeni öğrenciler ekleyebilirsiniz.`);
       }
+      appState.settings.teacherName = keepName;
+      appState.settings.teacherPass = keepPass;
       await persistState();
       renderApp();
     }
