@@ -1490,6 +1490,7 @@
       studentFilter: `all`, // 'all' | 'approved' | 'pending' | 'rejected'
       selectedRating: 5,
       editingEntryId: null,
+      reflectionUsesPreset: false,
       teacherAuthenticated: true,
       teacherTab: `approvals`, // 'approvals' | 'students' | 'reports' | 'settings'
       approvalFilter: `pending`, // 'pending' | 'approved' | 'rejected' | 'all'
@@ -1561,7 +1562,7 @@
       const rejected = entries.filter(function(e) { return e.status === `rejected`; });
       const approvedPages = approved.reduce(function(sum, e) { return sum + (Number(e.pages) || 0); }, 0);
       const genreSet = new Set(approved.map(function(e) { return e.genre; }).filter(function(genre) { return GENRES.indexOf(genre) !== -1; }));
-      const commentedApprovedCount = approved.filter(function(e) { return (e.reflection || ``).trim().length >= 15; }).length;
+      const commentedApprovedCount = approved.filter(function(e) { return (e.reflection || ``).trim().length >= 10; }).length;
       const genreCounts = {};
       GENRES.forEach(function(genre) { genreCounts[genre] = 0; });
       approved.forEach(function(entry) {
@@ -2154,9 +2155,19 @@
               <div class="field field-full">
                 <div class="flex-between">
                   <label class="field-label" for="stu-book-reflection">Kitap Hakkındaki Düşüncelerim</label>
-                  <span class="kicker" id="stu-char-counter">` + (editingEntry ? editingEntry.reflection.length : 0) + ` / 500 (en az 15)</span>
+                  <span class="kicker" id="stu-char-counter">` + (editingEntry ? editingEntry.reflection.length : 0) + ` / 500 (en az 10)</span>
                 </div>
-                <textarea id="stu-book-reflection" class="textarea-control" maxlength="500" oninput="updateReflectionCounter(this.value)" placeholder="En sevdiğin bölümü veya kitabın sana hissettirdiklerini yaz...` + `">` + escapeHtml(editingEntry ? editingEntry.reflection : ``) + `</textarea>
+                <textarea id="stu-book-reflection" class="textarea-control" minlength="10" maxlength="500" required oninput="handleReflectionInput(this.value)" placeholder="Bu kitabı en çok neden sevdin? En sevdiğin karakter kimdi? Kitap bitince ne hissettin?">` + escapeHtml(editingEntry ? editingEntry.reflection : ``) + `</textarea>
+                <div class="field-full flex-row">
+                  ` + [
+                    `Kitabı sevdim.`,
+                    `Kitabı sevmedim.`,
+                    `Resimleri güzeldi.`,
+                    `En çok ... bölümünü sevdim.`
+                  ].map(function(sentence) {
+                    return `<button type="button" class="btn btn-soft btn-sm" data-sentence="` + escapeHtml(sentence) + `" onclick="appendReflectionPreset(this.dataset.sentence)">` + escapeHtml(sentence) + `</button>`;
+                  }).join(``) + `
+                </div>
               </div>
               <div id="stu-form-error" class="inline-msg is-error field-full hidden" role="alert"></div>
               <div class="field-full flex-between">
@@ -2724,7 +2735,24 @@
 
     function updateReflectionCounter(val) {
       const el = document.getElementById(`stu-char-counter`);
-      if (el) el.textContent = val.length + ` / 500 (en az 15)`;
+      if (el) el.textContent = val.length + ` / 500 (en az 10)`;
+    }
+
+    function handleReflectionInput(val) {
+      uiState.reflectionUsesPreset = false;
+      updateReflectionCounter(val);
+    }
+
+    function appendReflectionPreset(sentence) {
+      const textarea = document.getElementById(`stu-book-reflection`);
+      if (!textarea) return;
+      const current = textarea.value.trimEnd();
+      const combined = current ? current + ` ` + sentence : sentence;
+      textarea.value = combined.slice(0, 500);
+      uiState.reflectionUsesPreset = true;
+      updateReflectionCounter(textarea.value);
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
     }
 
     function setStudentFilter(filter) {
@@ -2737,6 +2765,7 @@
       if (!entry) return;
       uiState.editingEntryId = entry.id;
       uiState.selectedRating = Number(entry.rating) || 5;
+      uiState.reflectionUsesPreset = !!entry.hazirCumle;
       renderApp();
       const titleInput = document.getElementById(`stu-book-title`);
       if (titleInput) titleInput.focus();
@@ -2745,6 +2774,7 @@
     function cancelEditEntry() {
       uiState.editingEntryId = null;
       uiState.selectedRating = 5;
+      uiState.reflectionUsesPreset = false;
       renderApp();
     }
 
@@ -2780,9 +2810,9 @@
         }
         return;
       }
-      if (reflection.length < 15) {
+      if (reflection.length < 10) {
         if (errEl) {
-          errEl.textContent = `Kitap hakkındaki düşüncelerini en az 15 karakter olarak paylaşmalısın.`;
+          errEl.textContent = `Kitap hakkındaki düşüncelerini en az 10 karakter olarak paylaşmalısın.`;
           errEl.classList.remove(`hidden`);
         }
         return;
@@ -2806,6 +2836,7 @@
           appState.entries[idx].pages = pages;
           appState.entries[idx].rating = uiState.selectedRating;
           appState.entries[idx].reflection = reflection;
+          appState.entries[idx].hazirCumle = uiState.reflectionUsesPreset;
           appState.entries[idx].status = `pending`;
           appState.entries[idx].rejectReason = ``;
           appState.entries[idx].createdAt = today;
@@ -2822,6 +2853,7 @@
           pages: pages,
           rating: uiState.selectedRating,
           reflection: reflection,
+          hazirCumle: uiState.reflectionUsesPreset,
           status: `pending`,
           teacherNote: ``,
           sticker: ``,
@@ -2832,6 +2864,7 @@
       }
 
       uiState.selectedRating = 5;
+      uiState.reflectionUsesPreset = false;
       await persistState();
       renderApp();
     }
